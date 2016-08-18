@@ -1,0 +1,92 @@
+<h1>Observatory</h1>
+
+<form action="javascript:getData(0)">
+
+<h2>Path criteria</h2>
+
+<p>
+Specify which paths you want to include. You may leave field blanks to indicate that
+no filtering for the field should be done.
+</p>
+
+<div class="form-group">
+	<label>Startpoint</label>
+	<input id="sip_ips" type="text" class="form-control" placeholder="" ng-model="sip">
+	<small class="text-muted">Enter an IPv4 or IPv6 address.</small> 
+</div>
+<div class="form-group">
+	<label>On path</label>
+	<input id="on_path_ips" type="text" class="form-control" placeholder="" ng-model="path">
+	<small class="text-muted">Enter IPv4 or IPv6 addresses that should be contained within the path. Use comma to separate multiple addresses.</small>
+</div>
+<div class="form-group">
+	<label>Endpoint</label>
+	<input id="dip_ips" type="text" class="form-control" placeholder="" ng-model="dip">
+	<small class="text-muted">Enter an IPv4 or IPv6 address.</small>
+</div>
+
+
+<h2>Condition criteria</h2>
+
+<p>
+Specify filter criteria for path conditions.
+</p>
+
+<fieldset ng-repeat="(idx, criterion) in criteria">
+<legend>Criterion {{ idx + 1 }}</legend>
+<div class="form-group">
+	<label>Combinator</label>
+	<select class="form-control" ng-model="criterion.combinator">
+		<option value="must">MUST</option>
+		<option value="one_of">ONE OF</option>
+	</select>
+</div>
+<div class="form-group">
+	<label>Operator</label>
+	<select class="form-control" ng-model="criterion.operator">
+		<option value="==">equals</option>
+		<option value="!=">not equals</option>
+		<option value="?">exists</option>
+	</select>
+	<small class="text-muted">Select an operator.</small>
+</div>
+<div class="form-group">
+	<label>Condition</label>
+	<input type="text" class="form-control" placeholder="" ng-model="criterion.condition">
+	<small class="text-muted">Enter the name of a condition.</small>
+</div>
+<div class="form-group">
+	<label>Value</label>
+	<input type="text" class="form-control" placeholder="" ng-model="criterion.value">
+	<small class="text-muted">Enter a value.</small>
+</div>
+</fieldset>
+
+<p></p>
+
+<button type="button" ng-click="query()" class="btn btn-primary">Query data</button>
+<button type="button" ng-click="addCriterion()" class="btn btn-primary">Add new criterion</button>
+<button type="button" ng-click="removeCriterion()" class="btn btn-primary">Remove last criterion</button>
+</form>
+
+
+
+<h2>Results</h2>
+
+<p>Showing <span id="results">{{ results.length }}</span> out of <span id="results_total">{{ totalresults }}</span> matching paths. Currently we know about <span id="results_max">{{ maxresults }}</span> paths in total.</p>
+
+<div id="show_data">
+	<span ng-show="results.length === 0" class="info">(no data to show)</span>
+	<div class="obs_path" ng-repeat="result in results">
+		<b class="path"><i> {{ result.path.join(' - ') }} </i></b><br>
+		<p class="obs_obs">We have {{ v.observations.length }} observation(s) on this path.</p>
+		<div class="obs_obs" ng-repeat="observation in result.observations">
+			<b>Analyzer: </b>{{ observation.analyzer }}<br>
+			<b>Time: </b> {{ formatTime(observation.time.from['$date']) }} <b>to</b> {{ formatTime(observation.time.to['$date']) }}<br>
+			<b>Conditions:</b> {{ observation.conditions.join(', ') }}<br>
+		</div>
+	</div>
+</div>
+
+<p>Page# <span id="page_num">{{ page }}</span> <a id="nextlink" ng-click="nextPage()">(next page)</a></p>
+<p>Direct Link: <a href="{{ directLink }}" id="directlink">{{ directLink }}</a></p>
