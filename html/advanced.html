@@ -79,7 +79,7 @@ Specify filter criteria for path conditions.
 	<span ng-show="results.length === 0" class="info">(no data to show)</span>
 	<div class="obs_path" ng-repeat="result in results">
 		<b class="path"><i> {{ result.path.join(' - ') }} </i></b><br>
-		<p class="obs_obs">We have {{ v.observations.length }} observation(s) on this path.</p>
+		<p class="obs_obs">We have {{ result.observations.length }} observation(s) on this path.</p>
 		<div class="obs_obs" ng-repeat="observation in result.observations">
 			<b>Analyzer: </b>{{ observation.analyzer }}<br>
 			<b>Time: </b> {{ formatTime(observation.time.from['$date']) }} <b>to</b> {{ formatTime(observation.time.to['$date']) }}<br>

@@ -46,6 +46,10 @@ ptoApp.controller("MainCtrl", function($scope) {
 				item.active = true;
 			}
 		});
+	};
+
+	$scope.formatTime = function(unix) {
+		return (new Date(unix)).toUTCString();
 	}
 });
 
@@ -154,9 +158,9 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 	var criteriaToQueryStringValue = function(criteria) {
 		return _.map(criteria, function(crit) {
 			return (_.isUndefined(crit.combinator) ? "" : crit.combinator) +
-				":" + (_.isUndefined(crit.operator) ? "" : crit.operator ) +
-				":" + (_.isUndefined(crit.condition) ? "" : crit.condition )  +
-				":" + (_.isUndefined(crit.value) ? "" : crit.value );
+				":" + (_.isUndefined(crit.operator) ? "" : crit.operator) +
+				":" + (_.isUndefined(crit.condition) ? "" : crit.condition)  +
+				":" + (_.isUndefined(crit.value) ? "" : crit.value);
 		}).join(",");
 	};
 
