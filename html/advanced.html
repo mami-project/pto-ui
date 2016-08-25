@@ -77,7 +77,7 @@ Specify filter criteria for path conditions.
 
 <div id="show_data">
 	<span ng-show="results.length === 0" class="info">(no data to show)</span>
-	<div class="obs_path" ng-repeat="result in results">
+	<div class="obs_path" ng-repeat="(idx, result) in results">
 		<b class="path"><i> {{ result.path.join(' - ') }} </i></b><br>
 		<p class="obs_obs">We have {{ result.observations.length }} observation(s) on this path.</p>
 		<div class="obs_obs" ng-repeat="observation in result.observations">
@@ -85,6 +85,8 @@ Specify filter criteria for path conditions.
 			<b>Time: </b> {{ formatTime(observation.time.from['$date']) }} <b>to</b> {{ formatTime(observation.time.to['$date']) }}<br>
 			<b>Conditions:</b> {{ observation.conditions.join(', ') }}<br>
 		</div>
+		<timeline renderdata="result" colormap="colorMap[idx]"></timeline>
+		<piechart renderdata="result" colormap="colorMap[idx]"></piechart>
 	</div>
 </div>
 
