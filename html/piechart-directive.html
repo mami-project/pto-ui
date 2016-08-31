@@ -1,6 +1,12 @@
-<div ng-repeat="slice in slices" class="checkbox">
-	<label ng-style="slice.style">
-		<input type="checkbox" ng-model="slice.selected" ng-disabled="slice.disabled">
-		{{ slice.name }}
-	</label>
+<div class="">
+	<div class="dont-expand svg-container"></div>
+	<div class="dont-expand">
+		<div ng-repeat="slice in slices" class="checkbox">
+			<label ng-style="slice.style">
+				<input type="checkbox" ng-model="slice.selected" ng-disabled="slice.disabled"></input>
+				{{ slice.name }}
+			</label>
+		</div>
+	</div>
+	<div class="clearfix"></div>
 </div>

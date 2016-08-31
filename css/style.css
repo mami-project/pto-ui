@@ -29,3 +29,55 @@ span.info {
 .path {
   font-size: 90%;
 }
+
+tr.highlighted {
+  color: magenta;
+}
+
+tr.rejected {
+  display: none;
+}
+
+svg > g.condition-group > rect {
+  cursor: pointer;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+timeline {
+  padding-bottom: 20px;
+  display:block;
+}
+
+timeline svg {
+  display: block;
+  margin: auto;
+}
+
+pie-chart {
+  padding-bottom: 20px;
+}
+
+.dont-expand {
+  display: block;
+  float: left;
+}
+
+.clearfix {
+  clear: both;
+}
+
+.svg-container {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.pie-chart-container {
+  padding-right: 20px;
+}
+
+.result-overview {
+  padding-top: 12px;
+}

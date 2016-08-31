@@ -1,7 +1,24 @@
 <h1>Observatory</h1>
+<form>
+<small>
+	<a class="pointer" ng-click="mockInterface = !mockInterface">
+	{{(!mockInterface) ? "Show" : "Hide"}} Mock Interface
+	</a>
+</small>
+<section ng-show="mockInterface">
+	<h2>Mocking</h2>
+	<div class="form-group">
+		<label>Number of Results (Paths)</label>
+		<input type="number" ng-model="mock.numberPathGroups"></input>
+	</div>
+	<div class="form-group">
+		<label>Number of Observations</label>
+		<input type="number" ng-model="mock.numberObservations"></input>
+	</div>
+	<button class="btn btn-primary" ng-click="mock.generate(); fetchResults(query); ">Generate Mock Data</button>
+</section>
 
-<form action="javascript:getData(0)">
-
+<section ng-show="!mockInterface">
 <h2>Path criteria</h2>
 
 <p>
@@ -11,20 +28,39 @@ no filtering for the field should be done.
 
 <div class="form-group">
 	<label>Startpoint</label>
-	<input id="sip_ips" type="text" class="form-control" placeholder="" ng-model="sip">
+	<input id="sip_ips" type="text" class="form-control" placeholder="" ng-model="query.sip">
 	<small class="text-muted">Enter an IPv4 or IPv6 address.</small> 
 </div>
 <div class="form-group">
 	<label>On path</label>
-	<input id="on_path_ips" type="text" class="form-control" placeholder="" ng-model="path">
+	<input id="on_path_ips" type="text" class="form-control" placeholder="" ng-model="query.path">
 	<small class="text-muted">Enter IPv4 or IPv6 addresses that should be contained within the path. Use comma to separate multiple addresses.</small>
 </div>
 <div class="form-group">
 	<label>Endpoint</label>
-	<input id="dip_ips" type="text" class="form-control" placeholder="" ng-model="dip">
+	<input id="dip_ips" type="text" class="form-control" placeholder="" ng-model="query.dip">
 	<small class="text-muted">Enter an IPv4 or IPv6 address.</small>
 </div>
-
+<div class="form-group">
+	<label>From Date</label>
+	<div class="input-group">
+	    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="query.from" is-open="fromIsOpen" save-as="number"/>
+	    <span class="input-group-btn">
+	        <button type="button" class="btn btn-default" ng-click="openFromCalendar($event, prop)"><i class="fa fa-calendar"></i></button>
+	    </span>
+	</div>
+	 <small class="text-muted">Enter a Date</small>
+</div>
+<div class="form-group">
+	<label>To Date</label>
+	<div class="input-group">
+	    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="query.to" is-open="toIsOpen" save-as="number"/>
+	    <span class="input-group-btn">
+	        <button type="button" class="btn btn-default" ng-click="openToCalendar($event, prop)"><i class="fa fa-calendar"></i></button>
+	    </span>
+	</div>
+	<small class="text-muted">Enter a Date</small>
+</div>
 
 <h2>Condition criteria</h2>
 
@@ -32,7 +68,7 @@ no filtering for the field should be done.
 Specify filter criteria for path conditions.
 </p>
 
-<fieldset ng-repeat="(idx, criterion) in criteria">
+<fieldset ng-repeat="(idx, criterion) in query.criteria">
 <legend>Criterion {{ idx + 1 }}</legend>
 <div class="form-group">
 	<label>Combinator</label>
@@ -64,12 +100,12 @@ Specify filter criteria for path conditions.
 
 <p></p>
 
-<button type="button" ng-click="query()" class="btn btn-primary">Query data</button>
-<button type="button" ng-click="addCriterion()" class="btn btn-primary">Add new criterion</button>
-<button type="button" ng-click="removeCriterion()" class="btn btn-primary">Remove last criterion</button>
+<button type="button" ng-click="fetchResults(query)" class="btn btn-primary">Query data</button>
+<button type="button" ng-click="query.addCriterion()" class="btn btn-primary">Add new criterion</button>
+<button type="button" ng-click="query.removeCriterion()" class="btn btn-primary">Remove last criterion</button>
 </form>
 
-
+</section>
 
 <h2>Results</h2>
 
@@ -78,15 +114,36 @@ Specify filter criteria for path conditions.
 <div id="show_data">
 	<span ng-show="results.length === 0" class="info">(no data to show)</span>
 	<div class="obs_path" ng-repeat="(idx, result) in results">
-		<b class="path"><i> {{ result.path.join(' - ') }} </i></b><br>
-		<p class="obs_obs">We have {{ result.observations.length }} observation(s) on this path.</p>
-		<div class="obs_obs" ng-repeat="observation in result.observations">
-			<b>Analyzer: </b>{{ observation.analyzer }}<br>
-			<b>Time: </b> {{ formatTime(observation.time.from['$date']) }} <b>to</b> {{ formatTime(observation.time.to['$date']) }}<br>
-			<b>Conditions:</b> {{ observation.conditions.join(', ') }}<br>
+		<div class="">
+			<div class="pie-chart-container well col-sm-6"><piechart renderdata="result" colormap="colorMap[idx]"></piechart></div>
+			<div class="col-sm-6 result-overview">
+				<dl class="dl-horizontal"><dt>Path:</dt><dd>{{ result.path.join(' - ') }}</dd>
+					<dt>Observations:</dt><dd>{{ result.observations.length }}</dd>
+					<dt>From:</dt><dd>{{ formatTime(getTimeWindow(result.observations).start) }}</dd>
+					<dt>To:</dt><dd>{{ formatTime(getTimeWindow(result.observations).end) }}</dd>
+				</dl>
+			</div>
 		</div>
-		<timeline renderdata="result" colormap="colorMap[idx]"></timeline>
-		<piechart renderdata="result" colormap="colorMap[idx]"></piechart>
+		<div class="clearfix"></div>
+		<div class="well"><timeline renderdata="result" colormap="colorMap[idx]" mousein="timeLineMouseIn(group, obs)" mouseout="timeLineMouseOut(group, obs)" click="timeLineClick(group, obs)"></timeline></div>
+		<table class="table table-condensed">
+			<thead>
+				<tr>
+					<th>Analyzer</th>
+					<th>From</th>
+					<th>To</th>
+					<th>Conditions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="observation in result.observations" class="{{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
+					<td>{{ observation.analyzer }}</td>
+					<td>{{ formatTime(observation.time.from['$date']) }}</td>
+					<td>{{ formatTime(observation.time.to['$date']) }}</td>
+					<td>{{ observation.conditions.join(', ') }}</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 </div>
 

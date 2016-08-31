@@ -103,7 +103,7 @@ var getUniqueConditions = function(pathGroup) {
 };
 
 var getCondObs = function(pathGroup, cond) {
-	return _.filter(pathGroup.observations, function(obs) {
+	return _.filter(pathGroup.observations, function(obs, k) {
 		return _.contains(obs.conditions, cond);
 	});
 };
@@ -116,7 +116,7 @@ var getTimeWindow = function(observations) {
 	}, { start: Number.MAX_VALUE, end: 0 });
 	timeWindow.diff = timeWindow.end - timeWindow.start;
 	return timeWindow;
-}
+};
 
 var getTimelineData = function(observations, timeWindow, tlwidth) {
 	return _.map(observations, function(obs) {
@@ -130,12 +130,28 @@ var getTimelineData = function(observations, timeWindow, tlwidth) {
 
 var colors = function(i) {
 	var c = d3.schemeCategory10;
-	console.log(c);
+	//console.log(c);
 	return c[i % (c.length)];
 };
 
+var highlightObs = function(d) {
+	console.log('highlightObs', d.parentIndex);
+};
+
+var unHighlightObs = function(d) {
+	console.log('unHighlightObs', d.parentIndex);
+};
+
 var visualizeTimeline = function(pathGroup, selector, options) {
-	var defaults = { width: 800, rowHeight: 20, padding: 100 };
+	var defaults = {
+		width: 800,
+		rowHeight: 20,
+		padding: 100,
+		mousein: function() {},
+		mouseout: function() {},
+		click: function() {},
+	};
+
 	var settings = _.extend(defaults, options || {});
 
 	var conditions = getUniqueConditions(pathGroup);
@@ -146,17 +162,26 @@ var visualizeTimeline = function(pathGroup, selector, options) {
 		.attr('width', settings.width)
 		.attr('height', settings.rowHeight * conditions.length);
 
+	// $svg.append('text')
+	// 	.attr("x", 0)
+	// 	.attr("y", 12)
+	// 	.text("lorem ipsum");
+	// $svg.append('text')
+	// 	.attr("x", settings.width - settings.padding + 5)
+	// 	.attr("y", 12)
+	// 	.text("lorem ipsum");
+
 	// prepare popover per timeline data point
-	var tip = d3.tip()
-		.attr('class', 'd3-tip')
-		.html(function(d) {
-			//console.log("tip d", d);
-			return "" +
-				(new Date(d.time.from.$date)).toUTCString() +
-				" - " +
-				(new Date(d.time.to.$date)).toUTCString();
-		});
-	$svg.call(tip);
+	// var tip = d3.tip()
+	// 	.attr('class', 'd3-tip')
+	// 	.html(function(d) {
+	// 		//console.log("tip d", d);
+	// 		return "" +
+	// 			(new Date(d.time.from.$date)).toUTCString() +
+	// 			" - " +
+	// 			(new Date(d.time.to.$date)).toUTCString();
+	// 	});
+	// $svg.call(tip);
 
 	var timeWindow = getTimeWindow(pathGroup.observations);
 
@@ -172,9 +197,23 @@ var visualizeTimeline = function(pathGroup, selector, options) {
 			.attr("y2", settings.rowHeight * cond_i + settings.rowHeight / 2)
 			.attr("stroke", "black")
 			.attr("stroke-width", 1);
+		$cond.append('line')
+			.attr("x1", settings.padding)
+			.attr("y1", settings.rowHeight * cond_i)
+			.attr("x2", settings.padding)
+			.attr("y2", settings.rowHeight * cond_i + settings.rowHeight)
+			.attr("stroke", "black")
+			.attr("stroke-width", 1);
+		$cond.append('line')
+			.attr("x1", settings.width - settings.padding)
+			.attr("y1", settings.rowHeight * cond_i)
+			.attr("x2", settings.width - settings.padding)
+			.attr("y2", settings.rowHeight * cond_i + settings.rowHeight)
+			.attr("stroke", "black")
+			.attr("stroke-width", 1);
 
 		var obs = getTimelineData(getCondObs(pathGroup, cond), timeWindow, settings.width - settings.padding * 2);
-		//console.log("timeline data", obs);
+		console.log("timeline data", obs);
 		var dataPoints = $cond.selectAll("rect.datarect-" + cond).data(obs, function(d) {return d;});
 		dataPoints.enter()
 			.append("svg:rect")
@@ -186,7 +225,7 @@ var visualizeTimeline = function(pathGroup, selector, options) {
 			.style("fill", function(d, i) {
 				var color;
 				if (!_.isUndefined(settings.colorMap)) {
-					console.log(settings.colorMap);
+					//console.log(settings.colorMap);
 					color = _.findWhere(settings.colorMap, { name: cond }).color;
 				} else {
 					color = colors(i);
@@ -197,15 +236,18 @@ var visualizeTimeline = function(pathGroup, selector, options) {
 			.style("stroke", function(d, i) {
 				var color;
 				if (!_.isUndefined(settings.colorMap)) {
-					console.log(settings.colorMap);
+					//console.log(settings.colorMap);
 					color = _.findWhere(settings.colorMap, { name: cond }).color;
 				} else {
 					color = colors(i);
 				}
 				return color;
 			})
-			.on('mouseover', tip.show)
-			.on('mouseout', tip.hide);
+			// .on('mouseover', tip.show)
+			// .on('mouseout', tip.hide);
+			.on('mouseover', function(d) { settings.mousein({group: d.grandParentIndex, obs: d.parentIndex}); })
+			.on('mouseout', function(d) { settings.mouseout({group: d.grandParentIndex, obs: d.parentIndex}); })
+			.on('click', function(d) { settings.click({group: d.grandParentIndex, obs: d.parentIndex}); });
 		// remove old elements if this is a recurring call on these elements
 		// probably not needed...
 		// dataPoints.exit().remove();
@@ -236,10 +278,14 @@ var getPieData = function(observations) {
 };
 
 var getPieVisualizer = function(selector, options) {
-	var defaults = { width: 300, height: 300, radius: 150 };
+	var defaults = { width: 140, height: 140, radius: 70 };
 	var settings = _.extend(defaults, options || {});
 
-	var $svg = d3.select(selector).append('svg')
+	var svgContainer = selector[0].querySelector('.svg-container');
+	console.log("pie selector", selector);
+	console.log("pie selected", svgContainer);
+
+	var $svg = d3.select(svgContainer).append('svg')
 		.attr('width', settings.width)
 		.attr('height', settings.height)
 		.append('g')
