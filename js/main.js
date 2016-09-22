@@ -1,4 +1,4 @@
-var apibase = "https://160.85.2.252:6443/pto";
+var apibase = "https://observatory.mami-project.eu/pto";
 
 // mock from https://160.85.2.252:6443/pto/api/advanced?sip=&dip=&from=0&to=1567204529149&on_path=&page_num=0&condition_criteria=must:%3F:ecn.negotiated:
 //var mock = {"results": [{"dip": "1.1.126.17", "sip": "188.166.146.182", "path": ["188.166.146.182", "*", "1.1.126.17"], "observations": [{"path": ["188.166.146.182", "*", "1.1.126.17"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467192589980}, "to": {"$date": 1467192596588}}}, {"path": ["188.166.146.182", "*", "1.1.126.17"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467104789677}, "to": {"$date": 1467104795691}}}]}, {"dip": "1.1.127.50", "sip": "188.166.146.182", "path": ["188.166.146.182", "*", "1.1.127.50"], "observations": [{"path": ["188.166.146.182", "*", "1.1.127.50"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467206251617}, "to": {"$date": 1467206256900}}}, {"path": ["188.166.146.182", "*", "1.1.127.50"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467118490886}, "to": {"$date": 1467118496911}}}]}, {"dip": "1.1.127.52", "sip": "188.166.146.182", "path": ["188.166.146.182", "*", "1.1.127.52"], "observations": [{"path": ["188.166.146.182", "*", "1.1.127.52"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467191984259}, "to": {"$date": 1467191989344}}}, {"path": ["188.166.146.182", "*", "1.1.127.52"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467104199086}, "to": {"$date": 1467104204154}}}]}, {"dip": "1.1.127.56", "sip": "188.166.146.182", "path": ["188.166.146.182", "*", "1.1.127.56"], "observations": [{"path": ["188.166.146.182", "*", "1.1.127.56"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467192300132}, "to": {"$date": 1467192305442}}}, {"path": ["188.166.146.182", "*", "1.1.127.56"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467104492200}, "to": {"$date": 1467104497637}}}]}, {"dip": "1.1.127.74", "sip": "188.166.146.182", "path": ["188.166.146.182", "*", "1.1.127.74"], "observations": [{"path": ["188.166.146.182", "*", "1.1.127.74"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467195319655}, "to": {"$date": 1467195325028}}}, {"path": ["188.166.146.182", "*", "1.1.127.74"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467107532774}, "to": {"$date": 1467107539566}}}]}, {"dip": "1.1.127.77", "sip": "188.166.146.182", "path": ["188.166.146.182", "*", "1.1.127.77"], "observations": [{"path": ["188.166.146.182", "*", "1.1.127.77"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467196608970}, "to": {"$date": 1467196614134}}}, {"path": ["188.166.146.182", "*", "1.1.127.77"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467108801244}, "to": {"$date": 1467108806390}}}]}, {"dip": "1.1.127.81", "sip": "188.166.146.182", "path": ["188.166.146.182", "*", "1.1.127.81"], "observations": [{"path": ["188.166.146.182", "*", "1.1.127.81"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467191494382}, "to": {"$date": 1467191499817}}}, {"path": ["188.166.146.182", "*", "1.1.127.81"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467103702979}, "to": {"$date": 1467103708744}}}]}, {"dip": "1.1.64.247", "sip": "188.166.146.182", "path": ["188.166.146.182", "*", "1.1.64.247"], "observations": [{"path": ["188.166.146.182", "*", "1.1.64.247"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467200857338}, "to": {"$date": 1467200862862}}}, {"path": ["188.166.146.182", "*", "1.1.64.247"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467113070227}, "to": {"$date": 1467113075171}}}]}, {"dip": "1.1.65.161", "sip": "188.166.146.182", "path": ["188.166.146.182", "*", "1.1.65.161"], "observations": [{"path": ["188.166.146.182", "*", "1.1.65.161"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467197318244}, "to": {"$date": 1467197324319}}}, {"path": ["188.166.146.182", "*", "1.1.65.161"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467109504053}, "to": {"$date": 1467109510289}}}]}, {"dip": "1.1.66.87", "sip": "188.166.146.182", "path": ["188.166.146.182", "*", "1.1.66.87"], "observations": [{"path": ["188.166.146.182", "*", "1.1.66.87"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467206017042}, "to": {"$date": 1467206023513}}}, {"path": ["188.166.146.182", "*", "1.1.66.87"], "value": {}, "conditions": ["ecn.connectivity.works", "ecn.negotiated"], "analyzer": "analyzer-ecnspider1", "time": {"from": {"$date": 1467118248278}, "to": {"$date": 1467118254986}}}]}], "count": 909413};
@@ -266,7 +266,7 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 		
 		addCriterion: function() {
 			this.criteria.push({});
-			this.condition_criteria = criteriaToQueryStringValue(this.criteria);
+			//this.condition_criteria = criteriaToQueryStringValue(this.criteria);
 		},
 		
 		removeCriterion: function() {
@@ -354,7 +354,7 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 	};
 
 	var inputToQueryString = function(args) {
-		return _.map(_.omit(args, _.functions(args)), function(v, k) {
+		return _.map(_.omit(args, 'criteria', 'addCriterion', 'removeCriterion'), function(v, k) {
 			return k + '=' + encodeURIComponent(v)
 		}).join('&');
 	};
@@ -372,13 +372,15 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 
 	$scope.fetchResults = function(queryObj) {
 
+		queryObj.condition_criteria = criteriaToQueryStringValue(queryObj.criteria);
+
 		console.log('query object', queryObj);
 
 		var queryString = inputToQueryString(queryObj);
 
 		//console.log('query string', queryString);
 
-		$location.search(queryObj);
+		$location.search(queryString);
 
 		var success = function(res) {
 			console.log("query response", res.data);
