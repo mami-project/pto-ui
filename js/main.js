@@ -256,9 +256,10 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 	$scope.getTimeWindow = getTimeWindow;
 
 	$scope.query = {
-		page: 0,
+		page_num: 0,
 		sip: "",
-		path: "",
+		dip: "",
+		on_path: "",
 		from: 0,
 		to: 1567204529149,
 		criteria: [],
@@ -414,19 +415,20 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 	};
 
 	$scope.nextPage = function() {
-		$scope.page += 1;
+		$scope.query.page_num += 1;
 		$scope.query();
 	};
 
 	// initial query from url params
 	var params = $location.search();
-	if (!_.isUndefined(params.sip) && !_.isUndefined(params.dip)) {
-		$scope.sip = params.sip;
-		$scope.dip = params.dip;
-		$scope.path = params.on_path;
-		$scope.page = params.page_num;
-		$scope.criteria = queryStringValueToCriteria(params.condition_criteria);
-		$scope.query();
+	if (!_.isUndefined(params.page_num)) {
+		console.log("direct link query", params);
+		$scope.query.sip = params.sip;
+		$scope.query.dip = params.dip;
+		$scope.query.on_path = params.on_path;
+		$scope.query.page_num = params.page_num;
+		$scope.query.criteria = queryStringValueToCriteria(params.condition_criteria);
+		$scope.fetchResults($scope.query);
 	}
 
 });
