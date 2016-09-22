@@ -415,8 +415,8 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 	};
 
 	$scope.nextPage = function() {
-		$scope.query.page_num += 1;
-		$scope.query();
+		$scope.query.page_num = 1 + parseInt($scope.query.page_num);
+		$scope.fetchResults($scope.query);
 	};
 
 	// initial query from url params
