@@ -90,7 +90,7 @@ ptoApp.directive('piechart', function($timeout) {
 						}
 						return exclude;
 					}, []);
-					console.log("slice color map", scope.colorMap);
+					//console.log("slice color map", scope.colorMap);
 					return _.extend({
 						selected: false,
 						disabled: false,
@@ -260,8 +260,8 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 	$scope.fetching = false;
 
 	var defaultQuery = {
-		// skip: 0,
-		// limit: 128,
+		skip: 0,
+		limit: 0,
 		sip: "",
 		dip: "",
 		on_path: "",
@@ -394,6 +394,11 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 		$scope.isError = false;
 		$scope.errorResponse = {};
 
+		if (queryObj.limit == 0) {
+			delete queryObj.limit;
+			delete queryObj.skip;
+		}
+
 		console.log('query object', queryObj);
 		var queryString = getQueryString(queryObj);
 		$location.search(queryString);
@@ -451,6 +456,9 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 	var params = $location.search();
 	$scope.query = paramsToQuery(params);
 	if (!_.isEmpty(params)) {
+		$scope.showCriteria = false;
+		$scope.showConditions = false;
+		$scope.showQuery = false;
 		$scope.fetchResults($scope.query);
 	}
 

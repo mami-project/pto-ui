@@ -60,6 +60,10 @@ pie-chart {
   padding-bottom: 20px;
 }
 
+.piechart-checkbox-group {
+  min-width: 210px;
+}
+
 .dont-expand {
   display: block;
   float: left;
