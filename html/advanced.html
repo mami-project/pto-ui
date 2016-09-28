@@ -17,8 +17,7 @@
 <h3 ng-click="showCriteria = !showCriteria"><span class="glyphicon glyphicon-{{ showCriteria ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Path criteria</h3>
 <div ng-show="showCriteria">
 <p>
-Specify which paths you want to include. You may leave field blanks to indicate that
-no filtering for the field should be done.
+<em>Specify which paths you want to include. You may leave field blanks to indicate that no filtering for the field should be done.</em>
 </p>
 
 <div class="form-group">
@@ -60,7 +59,7 @@ no filtering for the field should be done.
 <h3 ng-click="showConditions = !showConditions"><span class="glyphicon glyphicon-{{ showConditions ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Conditions</h3>
 <div ng-show="showConditions">
 <p>
-Specify observation conditions.
+	<em>Specify observation conditions.</em>
 </p>
 
 <fieldset ng-repeat="(idx, condition) in query.conditions">
@@ -88,10 +87,10 @@ Specify observation conditions.
 <button type="button" ng-click="query.conditions.pop()" class="btn btn-default" aria-label="remove condition"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
 </div>
 
-<h3 ng-click="showQuery = !showQuery"><span class="glyphicon glyphicon-{{ showQuery ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Query</h3>
+<h3 ng-click="showQuery = !showQuery"><span class="glyphicon glyphicon-{{ showQuery ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Grouping</h3>
 <div ng-show="showQuery">
 <p>
-Specify Query Type.
+	<em>Specify query grouping type.</em>
 </p>
 <fieldset>
 	<div class="radio">

@@ -101,6 +101,14 @@ pie-chart {
   cursor: pointer;
 }
 
+#query-form h3 .glyphicon {
+  color: #245580;
+}
+
 #mock-title {
   cursor: pointer;
+}
+
+#mock-title .glyphicon {
+  color: #245580;
 }
