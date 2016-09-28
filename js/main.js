@@ -237,6 +237,9 @@ ptoApp.controller("ObservatoryCtrl", function($scope, $http) {
 });
 
 ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
+	$scope.showCriteria = true;
+	$scope.showConditions = true;
+	$scope.showQuery = true;
 	$scope.mockInterface = false;
 	$scope.mocking = false;
 	$scope.mock = {
@@ -254,27 +257,69 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 	$scope.directLink = $location.absUrl();
 
 	$scope.getTimeWindow = getTimeWindow;
+	$scope.fetching = false;
 
-	$scope.query = {
-		page_num: 0,
+	var defaultQuery = {
+		// skip: 0,
+		// limit: 128,
 		sip: "",
 		dip: "",
 		on_path: "",
 		from: 0,
 		to: 1567204529149,
-		criteria: [],
-		condition_criteria: "",
-		
-		addCriterion: function() {
-			this.criteria.push({});
-			//this.condition_criteria = criteriaToQueryStringValue(this.criteria);
-		},
-		
-		removeCriterion: function() {
-			this.criteria.pop();
-			this.condition_criteria = criteriaToQueryStringValue(this.criteria);
-		}
+		conditions: []
 	};
+
+	$scope.queryType = "default";
+
+	var paramsToQuery = function(params) {
+		var query = _.extend({}, defaultQuery, params);
+		if (_.isString(query.conditions)) {
+			var reduction = _.reduce(query.conditions.split(""), function(iter, char) {
+				console.log("params to query", iter, char);
+				if (char === ":" || char === ",") {
+					return {
+						idx: iter.idx + 1,
+						result: iter.result.concat({ name: "", op: char })
+					};
+				}
+				iter.result[iter.idx].name += char;
+				return {
+					idx: iter.idx,
+					result: iter.result
+				};
+			}, {lastWord: "", result: [{name: ""}], idx: 0});
+			query.conditions = reduction.result;
+		}
+		console.log("conditions", query.conditions);
+		return query;
+	};
+
+	var getQueryString = function(object) {
+		return _.map(object, function(v, k) {
+			if (k === "conditions") {
+				return k + '=' + encodeURIComponent(_.reduce(v, function(str, condition) {
+					return str + ((condition.op) ? condition.op : "") + condition.name;
+				}, ""));
+			}
+			return k + '=' + encodeURIComponent(v);
+		}).join('&');
+	};
+
+	$scope.allConditions = [];
+
+	var fetchAllConditions = function() {
+		var success = function(res) {
+			console.log("all conditions", res.data);
+			$scope.allConditions = _.keys(res.data.conditions);
+		};
+
+		var error = function(err) {
+			console.error(err);
+		};
+		$http.get(apibase + '/api/all_conditions').then(success, error);
+	};
+	fetchAllConditions();
 
 	// fetched
 	$scope.maxresults = 0;
@@ -296,27 +341,6 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 
         $scope.toIsOpen = true;
     };
-
-	var criteriaToQueryStringValue = function(criteria) {
-		return _.map(criteria, function(crit) {
-			return (_.isUndefined(crit.combinator) ? "" : crit.combinator) +
-				":" + (_.isUndefined(crit.operator) ? "" : crit.operator) +
-				":" + (_.isUndefined(crit.condition) ? "" : crit.condition)  +
-				":" + (_.isUndefined(crit.value) ? "" : crit.value);
-		}).join(",");
-	};
-
-	var queryStringValueToCriteria = function(string) {
-		return _.map(string.split(','), function(crit) {
-			var critarr = crit.split(':');
-			return {
-				combinator: critarr[0],
-				operator: critarr[1],
-				condition: critarr[2],
-				value: critarr[3]
-			};
-		});
-	};
 
 	$scope.timeLineMouseIn = function(group, obs) {
 		$scope.$apply(function() {
@@ -354,12 +378,6 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 		$scope.$apply();
 	};
 
-	var inputToQueryString = function(args) {
-		return _.map(_.omit(args, 'criteria', 'addCriterion', 'removeCriterion'), function(v, k) {
-			return k + '=' + encodeURIComponent(v)
-		}).join('&');
-	};
-
 	var getColorMap = function(pathGroups) {
 		return _.map(pathGroups, function(pg, i) {
 			//console.log('start color mapping');
@@ -372,19 +390,22 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 	};
 
 	$scope.fetchResults = function(queryObj) {
-
-		queryObj.condition_criteria = criteriaToQueryStringValue(queryObj.criteria);
+		$scope.fetching = true;
+		$scope.isError = false;
+		$scope.errorResponse = {};
 
 		console.log('query object', queryObj);
-
-		var queryString = inputToQueryString(queryObj);
-
-		//console.log('query string', queryString);
-
+		var queryString = getQueryString(queryObj);
 		$location.search(queryString);
 
 		var success = function(res) {
 			console.log("query response", res.data);
+			if ($scope.queryType === 'default') {
+				res.data.results = [{
+					sip: "", dip: "",
+					observations: res.data.results
+				}];
+			}
 			$scope.results = _.map(res.data.results, function(pg, i) {
 				pg.observations = _.map(pg.observations, function(obs, k) {
 					obs.grandParentIndex = i;
@@ -400,34 +421,36 @@ ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
 			$scope.totalresults = res.data.count;
 			$scope.directLink = $location.absUrl();
 			$scope.colorMap = getColorMap($scope.results);
+			$scope.fetching = false;
 		};
 
 		var error = function(res) {
-			console.log(res);
+			console.error(res);
+			$scope.fetching = false;
+			$scope.isError = true;
+			$scope.errorResponse = res;
+			$scope.results = [];
 		};
 		if ($scope.mockInterface) {
 			success({
 				data: $scope.mock.data
 			})
 		} else {
-			$http.get(apibase + '/api/advanced?' + queryString).then(success, error);
+			var endPoint = ($scope.queryType === 'default') ? '/api/raw/observations?' : '/api/observations?';
+			$http.get(apibase + endPoint + queryString).then(success, error);
 		}
 	};
 
 	$scope.nextPage = function() {
-		$scope.query.page_num = 1 + parseInt($scope.query.page_num);
+		$scope.query.skip = parseInt($scope.query.limit) + parseInt($scope.query.skip);
 		$scope.fetchResults($scope.query);
 	};
 
 	// initial query from url params
+	// TODO error handling / 404
 	var params = $location.search();
-	if (!_.isUndefined(params.page_num)) {
-		console.log("direct link query", params);
-		$scope.query.sip = params.sip;
-		$scope.query.dip = params.dip;
-		$scope.query.on_path = params.on_path;
-		$scope.query.page_num = params.page_num;
-		$scope.query.criteria = queryStringValueToCriteria(params.condition_criteria);
+	$scope.query = paramsToQuery(params);
+	if (!_.isEmpty(params)) {
 		$scope.fetchResults($scope.query);
 	}
 
