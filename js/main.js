@@ -36,9 +36,9 @@ ptoApp.config([
 				templateUrl: "html/uploadstats.html",
 				controller: "UploadStatsCtrl"
 			}).
-			when("/advanced", {
-				templateUrl: "html/advanced.html",
-				controller: "AdvancedCtrl",
+			when("/observatory", {
+				templateUrl: "html/observatory.html",
+				controller: "ObservatoryCtrl",
 				reloadOnSearch: false
 			}).
 			otherwise({
@@ -132,7 +132,7 @@ ptoApp.controller("MainCtrl", function($scope) {
 	$scope.main.menu = [
 		{ label: "Home", href: "", active: false },
 		{ label: "Upload Statistics", href: "uploadstats", active: false },
-		{ label: "Advanced", href: "advanced", active: false }
+		{ label: "Observatory", href: "observatory", active: false }
 	];
 
 	$scope.setActiveMenu = function(href) {
@@ -177,7 +177,7 @@ ptoApp.controller("UploadStatsCtrl", function($scope, $http) {
 	$http.get(apibase + "/api/uploadstats").then(success, error);
 });
 
-ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
+ptoApp.controller("ObservatoryCtrl", function($scope, $http, $location) {
 	$scope.showCriteria = true;
 	$scope.showConditions = true;
 	$scope.showQuery = true;
