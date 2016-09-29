@@ -132,8 +132,8 @@
 			<div class="col-sm-6 result-overview">
 				<dl class="dl-horizontal"><dt>Path:</dt><dd>{{ result.sip + " - * - " + result.dip }}</dd>
 					<dt>Observations:</dt><dd>{{ result.observations.length }}</dd>
-					<dt>From:</dt><dd>{{ formatTime(getTimeWindow(result.observations).start) }}</dd>
-					<dt>To:</dt><dd>{{ formatTime(getTimeWindow(result.observations).end) }}</dd>
+					<dt>From:</dt><dd>{{ main.formatTime(getTimeWindow(result.observations).start) }}</dd>
+					<dt>To:</dt><dd>{{ main.formatTime(getTimeWindow(result.observations).end) }}</dd>
 				</dl>
 			</div>
 		</div>
@@ -151,8 +151,8 @@
 			<tbody>
 				<tr ng-repeat="observation in result.observations" class="{{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
 					<td>{{ observation.analyzer }}</td>
-					<td>{{ formatTime(observation.time.from['$date']) }}</td>
-					<td>{{ formatTime(observation.time.to['$date']) }}</td>
+					<td>{{ main.formatTime(observation.time.from['$date']) }}</td>
+					<td>{{ main.formatTime(observation.time.to['$date']) }}</td>
 					<td>{{ observation.conditions.join(', ') }}</td>
 				</tr>
 			</tbody>
