@@ -143,6 +143,7 @@ var unHighlightObs = function(d) {
 };
 
 var visualizeTimeline = function(pathGroup, selector, options) {
+	//console.log("pg", pathGroup);
 	var defaults = {
 		width: 800,
 		rowHeight: 20,
@@ -213,7 +214,7 @@ var visualizeTimeline = function(pathGroup, selector, options) {
 			.attr("stroke-width", 1);
 
 		var obs = getTimelineData(getCondObs(pathGroup, cond), timeWindow, settings.width - settings.padding * 2);
-		console.log("timeline data", obs);
+		//console.log("timeline data", obs);
 		var dataPoints = $cond.selectAll("rect.datarect-" + cond).data(obs, function(d) {return d;});
 		dataPoints.enter()
 			.append("svg:rect")
@@ -282,8 +283,8 @@ var getPieVisualizer = function(selector, options) {
 	var settings = _.extend(defaults, options || {});
 
 	var svgContainer = selector[0].querySelector('.svg-container');
-	console.log("pie selector", selector);
-	console.log("pie selected", svgContainer);
+	// console.log("pie selector", selector);
+	// console.log("pie selected", svgContainer);
 
 	var $svg = d3.select(svgContainer).append('svg')
 		.attr('width', settings.width)
@@ -317,7 +318,7 @@ var getPieVisualizer = function(selector, options) {
 				.attr('fill', function(d, i) {
 					var color;
 					if (!_.isUndefined(settings.colorMap)) {
-						console.log(settings.colorMap);
+						//console.log(settings.colorMap);
 						color = _.findWhere(settings.colorMap, { name: d.data.name }).color;
 					} else {
 						color = colors(i);
@@ -330,3 +331,27 @@ var getPieVisualizer = function(selector, options) {
 			// 	.text('asdf');
 	};
 };
+
+angular.module("ptoApp.timeline", [])
+
+	.directive('timeline', function() {
+		return {
+			scope: {
+				renderData: '=renderdata',
+				colorMap: '=colormap',
+				mousein: '&mousein',
+				mouseout: '&mouseout',
+				click: '&click'
+			},
+			link: function(scope, element, attrs) {
+				//console.log('timeline directive', element, attrs);
+				visualizeTimeline(scope.renderData, element[0],
+					{
+						colorMap: scope.colorMap,
+						mousein: scope.mousein,
+						mouseout: scope.mouseout,
+						click: scope.click
+					});
+			}
+		};
+	})

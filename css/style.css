@@ -116,3 +116,7 @@ pie-chart {
 #mock-title .glyphicon {
   color: #245580;
 }
+
+.piechart-container .number {
+  color: black;
+}

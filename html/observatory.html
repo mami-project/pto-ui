@@ -1,44 +1,44 @@
 <h1>Observatory</h1>
 <form>
-<h5 id="mock-title" ng-click="mockInterface = !mockInterface"><span class="glyphicon glyphicon-{{ mockInterface ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Mocking</h5>
-<section ng-show="mockInterface">
+<h5 id="mock-title" ng-click="ui.mock.active = !ui.mock.active"><span class="glyphicon glyphicon-{{ ui.mock.active ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Mocking <code>{{ ui.mock.active ? "enabled" : "disabled"; }}</code></h5>
+<section ng-show="ui.mock.active">
 	<div class="form-group">
 		<label>Number of Results (Paths)</label>
-		<input type="number" ng-model="mock.numberPathGroups"></input>
+		<input type="number" ng-model="ui.mock.nPathGroups"></input>
 	</div>
 	<div class="form-group">
 		<label>Number of Observations</label>
-		<input type="number" ng-model="mock.numberObservations"></input>
+		<input type="number" ng-model="ui.mock.nObservations"></input>
 	</div>
-	<button class="btn btn-primary" ng-click="mock.generate(); fetchResults(query); ">Generate Mock Data</button>
+	<button class="btn btn-primary" ng-click="fetchResults(ui.mock.generate()); ">Generate Mock Data</button>
 </section>
 
-<section ng-show="!mockInterface" id="query-form">
-<h3 ng-click="showCriteria = !showCriteria"><span class="glyphicon glyphicon-{{ showCriteria ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Path criteria</h3>
-<div ng-show="showCriteria">
+<section ng-show="!ui.mock.active" id="query-form">
+<h3 ng-click="ui.pathCriteria.show = !ui.pathCriteria.show"><span class="glyphicon glyphicon-{{ ui.pathCriteria.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Path Criteria <small><code>{{ printPathCriteria(ui.query) }}</code></small></h3>
+<div ng-show="ui.pathCriteria.show">
 <p>
 <em>Specify which paths you want to include. You may leave field blanks to indicate that no filtering for the field should be done.</em>
 </p>
 
 <div class="form-group">
 	<label>Startpoint</label>
-	<input id="sip_ips" type="text" class="form-control" placeholder="" ng-model="query.sip">
+	<input id="sip_ips" type="text" class="form-control" placeholder="" ng-model="ui.query.sip">
 	<small class="text-muted">Enter an IPv4 or IPv6 address.</small> 
 </div>
 <div class="form-group">
 	<label>On path</label>
-	<input id="on_path_ips" type="text" class="form-control" placeholder="" ng-model="query.on_path">
+	<input id="on_path_ips" type="text" class="form-control" placeholder="" ng-model="ui.query.on_path">
 	<small class="text-muted">Enter IPv4 or IPv6 addresses that should be contained within the path. Use comma to separate multiple addresses.</small>
 </div>
 <div class="form-group">
 	<label>Endpoint</label>
-	<input id="dip_ips" type="text" class="form-control" placeholder="" ng-model="query.dip">
+	<input id="dip_ips" type="text" class="form-control" placeholder="" ng-model="ui.query.dip">
 	<small class="text-muted">Enter an IPv4 or IPv6 address.</small>
 </div>
 <div class="form-group">
 	<label>From Date</label>
 	<div class="input-group">
-	    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="query.from" is-open="fromIsOpen" save-as="number"/>
+	    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="ui.query.from" is-open="fromIsOpen" save-as="number"/>
 	    <span class="input-group-btn">
 	        <button type="button" class="btn btn-default" ng-click="openFromCalendar($event, prop)"><i class="fa fa-calendar"></i></button>
 	    </span>
@@ -48,7 +48,7 @@
 <div class="form-group">
 	<label>To Date</label>
 	<div class="input-group">
-	    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="query.to" is-open="toIsOpen" save-as="number"/>
+	    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="ui.query.to" is-open="toIsOpen" save-as="number"/>
 	    <span class="input-group-btn">
 	        <button type="button" class="btn btn-default" ng-click="openToCalendar($event, prop)"><i class="fa fa-calendar"></i></button>
 	    </span>
@@ -56,13 +56,13 @@
 	<small class="text-muted">Enter a Date</small>
 </div>
 </div>
-<h3 ng-click="showConditions = !showConditions"><span class="glyphicon glyphicon-{{ showConditions ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Conditions</h3>
-<div ng-show="showConditions">
+<h3 ng-click="ui.conditions.show = !ui.conditions.show"><span class="glyphicon glyphicon-{{ ui.conditions.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Conditions <small><code>{{ printConditions(ui.query) }}</code></small></h3>
+<div ng-show="ui.conditions.show">
 <p>
 	<em>Specify observation conditions.</em>
 </p>
 
-<fieldset ng-repeat="(idx, condition) in query.conditions">
+<fieldset ng-repeat="(idx, condition) in ui.query.conditions">
 <!--<legend>{{ condition.op.length > 0 ? condition.op + " " + condition.name : condition.name }}</legend>-->
 <div class="form-group" ng-if="idx > 0">
 	<label>Operator</label>
@@ -70,7 +70,7 @@
 		<option value=":">AND</option>
 		<option value=",">OR</option>
 	</select>
-	<small class="text-muted">Select a condition.</small>
+	<small class="text-muted">Select a logical operator.</small>
 </div>
 <div class="form-group">
 	<label>Name</label>
@@ -83,31 +83,31 @@
 
 <p></p>
 
-<button type="button" ng-click="(query.conditions.length <= 1) ? query.conditions.push({ name: ''}) : query.conditions.push({ name: '', op: ':'})" class="btn btn-default" aria-label="add condition"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-<button type="button" ng-click="query.conditions.pop()" class="btn btn-default" aria-label="remove condition"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+<button type="button" ng-click="(ui.query.conditions.length <= 1) ? ui.query.conditions.push({ name: ''}) : ui.query.conditions.push({ name: '', op: ':'})" class="btn btn-default" aria-label="add condition"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+<button type="button" ng-click="ui.query.conditions.pop()" class="btn btn-default" aria-label="remove condition"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
 </div>
 
-<h3 ng-click="showQuery = !showQuery"><span class="glyphicon glyphicon-{{ showQuery ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Grouping</h3>
-<div ng-show="showQuery">
+<h3 ng-click="ui.grouping.show = !ui.grouping.show"><span class="glyphicon glyphicon-{{ ui.grouping.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Grouping <small><code>{{ printGrouping(ui.grouping.type) }}</code></small></h3>
+<div ng-show="ui.grouping.show">
 <p>
 	<em>Specify query grouping type.</em>
 </p>
 <fieldset>
 	<div class="radio">
 		<label>
-		<input type="radio" value="default" ng-model="queryType">
+		<input type="radio" value="default" ng-model="ui.grouping.type">
 			Standard Query
 		</label>
 	</div>
 	<div class="radio">
 		<label>
-		<input type="radio" value="grouped" ng-model="queryType">
+		<input type="radio" value="grouped" ng-model="ui.grouping.type">
 			Group by Network Paths
 		</label>
 	</div>	
 </fieldset>
 </div>
-<button type="button" ng-click="fetchResults(query)" class="btn btn-primary" aria-label="submit"><span ng-show="!fetching" class="glyphicon glyphicon-search" aria-hidden="true"></span><span ng-show="fetching" class="glyphicon glyphicon-repeat spinning" aria-hidden="true"></span> Submit</button>
+<button type="button" ng-click="fetchResults(ui.query)" class="btn btn-primary" aria-label="submit"><span ng-show="!fetching" class="glyphicon glyphicon-search" aria-hidden="true"></span><span ng-show="fetching" class="glyphicon glyphicon-repeat spinning" aria-hidden="true"></span> Submit</button>
 </form>	
 </section>
 
@@ -159,8 +159,8 @@
 		</table>
 	</div>
 </div>
-<div ng-show="query.limit > 0">
-<p>page #<span id="page_num">{{ query.skip/query.limit }}</span> <a id="nextlink" ng-click="nextPage()"> next</a></p>
+<div ng-show="ui.query.limit > 0">
+<p>page #<span id="page_num">{{ ui.query.skip/ui.query.limit }}</span> <a id="nextlink" ng-click="nextPage()"> next</a></p>
 <div>
 <p>Direct Link: <a href="{{ directLink }}" id="directlink">{{ directLink }}</a></p>
 </section>
