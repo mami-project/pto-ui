@@ -120,3 +120,7 @@ pie-chart {
 .piechart-container .number {
   color: black;
 }
+
+h3 code {
+  /*float: right;*/
+}

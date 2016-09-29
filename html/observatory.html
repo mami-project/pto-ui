@@ -14,7 +14,7 @@
 </section>
 
 <section ng-show="!ui.mock.active" id="query-form">
-<h3 ng-click="ui.pathCriteria.show = !ui.pathCriteria.show"><span class="glyphicon glyphicon-{{ ui.pathCriteria.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Path Criteria <small><code>{{ printPathCriteria(ui.query) }}</code></small></h3>
+<h3 ng-click="ui.pathCriteria.show = !ui.pathCriteria.show"><span class="glyphicon glyphicon-{{ ui.pathCriteria.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Path Criteria <small><code>{{ ui.pathCriteria.display(ui.query) }}</code></small></h3>
 <div ng-show="ui.pathCriteria.show">
 <p>
 <em>Specify which paths you want to include. You may leave field blanks to indicate that no filtering for the field should be done.</em>
@@ -38,9 +38,9 @@
 <div class="form-group">
 	<label>From Date</label>
 	<div class="input-group">
-	    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="ui.query.from" is-open="fromIsOpen" save-as="number"/>
+	    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="ui.query.from" is-open="ui.pathCriteria.calendarFrom" save-as="number"/>
 	    <span class="input-group-btn">
-	        <button type="button" class="btn btn-default" ng-click="openFromCalendar($event, prop)"><i class="fa fa-calendar"></i></button>
+	        <button type="button" class="btn btn-default" ng-click="ui.pathCriteria.calendarFrom = !ui.pathCriteria.calendarFrom; main.stopUI($event, prop)"><i class="fa fa-calendar"></i></button>
 	    </span>
 	</div>
 	 <small class="text-muted">Enter a Date</small>
@@ -48,15 +48,18 @@
 <div class="form-group">
 	<label>To Date</label>
 	<div class="input-group">
-	    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="ui.query.to" is-open="toIsOpen" save-as="number"/>
+	    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="ui.query.to" is-open="ui.pathCriteria.calendarTo" save-as="number"/>
 	    <span class="input-group-btn">
-	        <button type="button" class="btn btn-default" ng-click="openToCalendar($event, prop)"><i class="fa fa-calendar"></i></button>
+	        <button type="button" class="btn btn-default" ng-click="ui.pathCriteria.calendarTo = !ui.pathCriteria.calendarTo; main.stopUI($event, prop)"><i class="fa fa-calendar"></i></button>
 	    </span>
 	</div>
 	<small class="text-muted">Enter a Date</small>
 </div>
 </div>
-<h3 ng-click="ui.conditions.show = !ui.conditions.show"><span class="glyphicon glyphicon-{{ ui.conditions.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Conditions <small><code>{{ printConditions(ui.query) }}</code></small></h3>
+<hr>
+
+<h3 ng-click="ui.conditions.show = !ui.conditions.show"><span class="glyphicon glyphicon-{{ ui.conditions.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Conditions <small><code>{{ ui.conditions.display(ui.query) }}</code></small></h3>
+
 <div ng-show="ui.conditions.show">
 <p>
 	<em>Specify observation conditions.</em>
@@ -75,7 +78,7 @@
 <div class="form-group">
 	<label>Name</label>
 	<select class="form-control" ng-model="condition.name">
-		<option ng-repeat="cname in allConditions" value="{{ cname }}">{{ cname }}</option>
+		<option ng-repeat="cname in api.allConditions" value="{{ cname }}">{{ cname }}</option>
 	</select>
 	<small class="text-muted">Select a condition.</small>
 </div>
@@ -86,8 +89,9 @@
 <button type="button" ng-click="(ui.query.conditions.length <= 1) ? ui.query.conditions.push({ name: ''}) : ui.query.conditions.push({ name: '', op: ':'})" class="btn btn-default" aria-label="add condition"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
 <button type="button" ng-click="ui.query.conditions.pop()" class="btn btn-default" aria-label="remove condition"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
 </div>
+<hr>
 
-<h3 ng-click="ui.grouping.show = !ui.grouping.show"><span class="glyphicon glyphicon-{{ ui.grouping.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Grouping <small><code>{{ printGrouping(ui.grouping.type) }}</code></small></h3>
+<h3 ng-click="ui.grouping.show = !ui.grouping.show"><span class="glyphicon glyphicon-{{ ui.grouping.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span> Grouping <small><code>{{ ui.grouping.display(ui.grouping.type) }}</code></small></h3>
 <div ng-show="ui.grouping.show">
 <p>
 	<em>Specify query grouping type.</em>
@@ -106,9 +110,11 @@
 		</label>
 	</div>	
 </fieldset>
+
 </div>
-<button type="button" ng-click="fetchResults(ui.query)" class="btn btn-primary" aria-label="submit"><span ng-show="!fetching" class="glyphicon glyphicon-search" aria-hidden="true"></span><span ng-show="fetching" class="glyphicon glyphicon-repeat spinning" aria-hidden="true"></span> Submit</button>
-</form>	
+<hr>
+<button type="button" ng-click="fetchResults(ui.query)" class="btn btn-primary" aria-label="submit"><span ng-show="!ui.loading" class="glyphicon glyphicon-search" aria-hidden="true"></span><span ng-show="ui.loading" class="glyphicon glyphicon-repeat spinning" aria-hidden="true"></span> Submit</button>
+</form>
 </section>
 
 <h3>Results</h3>
@@ -120,13 +126,13 @@
 	</div>
 </section>
 <section>
-<p>Showing <span id="results">{{ results.length }}</span> <!--<span id="results_total">{{ totalresults }}</span>--> matching results.
+<p>Showing <span id="results">{{ api.results.length }}</span> <!--<span id="results_total">{{ totalresults }}</span>--> matching results.
 </p>
 <!--Currently we know about <span id="results_max">{{ maxresults }}</span> paths in total.</p>-->
 
 <div id="show_data">
-	<span ng-show="results.length === 0" class="info">(no data to show)</span>
-	<div class="obs_path" ng-repeat="(idx, result) in results">
+	<span ng-show="api.results.length === 0" class="info">(no data to show)</span>
+	<div class="obs_path" ng-repeat="(idx, result) in api.results">
 		<div class="">
 			<div class="pie-chart-container well col-sm-6"><piechart renderdata="result" colormap="colorMap[idx]"></piechart></div>
 			<div class="col-sm-6 result-overview">

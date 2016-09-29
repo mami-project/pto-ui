@@ -20,5 +20,10 @@ angular.module("ptoApp")
 
 		$scope.main.formatTime = function(unix) {
 			return (new Date(parseInt(unix))).toUTCString();
-		}
+		};
+
+		$scope.main.stopUI = function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+		};
 	});

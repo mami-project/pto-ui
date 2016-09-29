@@ -8,19 +8,51 @@ angular.module("ptoApp")
 		$scope.getTimeWindow = getTimeWindow;
 
 		$scope.ui = {
+			
+			loading: false,
+			
 			pathCriteria: {
 				show: false,
+				calendarFrom: false,
+				calendarTo: false,
+				display: function(query) {
+					return (query.sip || "( empty )") +
+						" - " + (query.on_path || "*") +
+						" - " + (query.dip || "( empty )") +
+						" | " + ($scope.main.formatTime(query.from) || "( empty )") +
+						" - " + ($scope.main.formatTime(query.to) || "( empty )");
+				}
 			},
+
 			conditions: {
 				show: false,
+				display: function(query) {
+					return getConditionsString(query.conditions)
+						.replace(":", " AND ")
+						.replace(",", " OR ") ||
+						"( empty )";
+				}
 			},
+			
 			grouping: {
 				show: false,
 				type: 'default',
+				display: function(queryType) {
+					return queryType || "( empty )";
+				}
 			},
+			
 			query: {
-
+				skip: 0,
+				limit: 0,
+				sip: "",
+				dip: "",
+				on_path: "",
+				from: 0,
+				to: 1567204529149,
+				conditions: []
 			},
+
 			mock: {
 				active: false,
 				nPathGroups: 0,
@@ -30,25 +62,21 @@ angular.module("ptoApp")
 				}
 			},
 		};
-		
-		$scope.fetching = false;
 
-		var defaultQuery = {
-			skip: 0,
-			limit: 0,
-			sip: "",
-			dip: "",
-			on_path: "",
-			from: 0,
-			to: 1567204529149,
-			conditions: []
+		$scope.api = {
+
+			allConditions: [],
+			
+			results: [],
+			max: 0,
+			count: 0,
 		};
 
-		var paramsToQuery = function(params) {
-			var query = _.extend({}, defaultQuery, params);
+		var paramsToQuery = function(uiQuery, params) {
+			var query = _.extend({}, uiQuery, params);
 			if (_.isString(query.conditions)) {
 				var reduction = _.reduce(query.conditions.split(""), function(iter, char) {
-					console.log("params to query", iter, char);
+					//console.log("params to query", iter, char);
 					if (char === ":" || char === ",") {
 						return {
 							idx: iter.idx + 1,
@@ -60,10 +88,10 @@ angular.module("ptoApp")
 						idx: iter.idx,
 						result: iter.result
 					};
-				}, {lastWord: "", result: [{name: ""}], idx: 0});
+				}, { lastWord: "", result: [ {name: ""} ], idx: 0 });
 				query.conditions = reduction.result;
 			}
-			console.log("conditions", query.conditions);
+			//console.log("conditions", query.conditions);
 			return query;
 		};
 
@@ -82,94 +110,39 @@ angular.module("ptoApp")
 			}).join('&');
 		};
 
-		$scope.allConditions = [];
-
-		var fetchAllConditions = function() {
-			var success = function(res) {
-				console.log("all conditions", res.data);
-				$scope.allConditions = _.keys(res.data.conditions);
-			};
-
-			var error = function(err) {
-				console.error(err);
-			};
-			$http.get(config.apibase + '/api/all_conditions').then(success, error);
-		};
-		fetchAllConditions();
-
-		$scope.printPathCriteria = function(query) {
-			return (query.sip || "( empty )") +
-				" - " + (query.on_path || "*") +
-				" - " + (query.dip || "( empty )") +
-				" | " + ($scope.main.formatTime(query.from) || "( empty )") +
-				" - " + ($scope.main.formatTime(query.to) || "( empty )");
-		};
-
-		$scope.printConditions = function(query) {
-			return getConditionsString(query.conditions)
-				.replace(":", " AND ")
-				.replace(",", " OR ") ||
-				"( empty )";
-		};
-
-		$scope.printGrouping = function(queryType) {
-			return queryType || "( empty )";
-		};
-
-		// fetched
-		$scope.maxresults = 0;
-		$scope.totalresults = 0;
-		$scope.results = [];
-
-		$scope.fromIsOpen = false;
-		$scope.openFromCalendar = function(e) {
-	        e.preventDefault();
-	        e.stopPropagation();
-
-	        $scope.fromIsOpen = true;
-	    };
-
-	    $scope.toIsOpen = false;
-		$scope.openToCalendar = function(e) {
-	        e.preventDefault();
-	        e.stopPropagation();
-
-	        $scope.toIsOpen = true;
-	    };
+		// TODO decouple sideeffects from timeline
+		// TODO decouple timeline into separate controller or put it into UI
 
 		$scope.timeLineMouseIn = function(group, obs) {
 			$scope.$apply(function() {
-				$scope.results[group].observations[obs].highlighted = true;
+				$scope.api.results[group].observations[obs].highlighted = true;
 			});
 		};
 
 		$scope.timeLineMouseOut = function(group, obs) {
 			$scope.$apply(function() {
-				$scope.results[group].observations[obs].highlighted = false;
+				$scope.api.results[group].observations[obs].highlighted = false;
 			});
 		};
 
 		var rejectToggle = false;
 		$scope.timeLineClick = function(group, obs) {
-			console.log('click', group, obs);
-			var rejected = $scope.results[group].observations[obs].rejected;
-			console.log('rejected', rejected, 'toggle', rejectToggle);
+			//console.log('click', group, obs);
+			var rejected = $scope.api.results[group].observations[obs].rejected;
+			//console.log('rejected', rejected, 'toggle', rejectToggle);
 			if (rejected) {
 				rejectToggle = true;
 			} else {
 				rejectToggle = !rejectToggle;
 			}
-
-			console.log('new toggle', rejectToggle);
-
-			
-			_.each($scope.results, function(group) {
+			//console.log('new toggle', rejectToggle);
+			_.each($scope.api.results, function(group) {
 				_.each(group.observations, function(obs) {
 					obs.rejected = rejectToggle;
 				});
 			});
-			$scope.results[group].observations[obs].rejected = false;
-			console.log($scope.results);
+			$scope.api.results[group].observations[obs].rejected = false;
+			//console.log($scope.api.results);
 			$scope.$apply();
 		};
 
@@ -184,8 +157,20 @@ angular.module("ptoApp")
 			});
 		};
 
+		$scope.fetchAllConditions = function() {
+			var success = function(res) {
+				console.log("all conditions", res.data);
+				$scope.api.allConditions = _.keys(res.data.conditions);
+			};
+
+			var error = function(err) {
+				console.error(err);
+			};
+			$http.get(config.apibase + '/api/all_conditions').then(success, error);
+		};
+
 		$scope.fetchResults = function(queryObj) {
-			$scope.fetching = true;
+			$scope.ui.loading = true;
 			$scope.isError = false;
 			$scope.errorResponse = {};
 
@@ -206,7 +191,7 @@ angular.module("ptoApp")
 						observations: res.data.results
 					}];
 				}
-				$scope.results = _.map(res.data.results, function(pg, i) {
+				$scope.api.results = _.map(res.data.results, function(pg, i) {
 					pg.observations = _.map(pg.observations, function(obs, k) {
 						obs.grandParentIndex = i;
 						obs.parentIndex = k;
@@ -216,20 +201,20 @@ angular.module("ptoApp")
 					});
 					return pg;
 				});
-				//console.log("pi added", $scope.results);
+				//console.log("pi added", $scope.api.results);
 				$scope.maxresults = res.data.max;
 				$scope.totalresults = res.data.count;
 				$scope.directLink = $location.absUrl();
-				$scope.colorMap = getColorMap($scope.results);
-				$scope.fetching = false;
+				$scope.colorMap = getColorMap($scope.api.results);
+				$scope.ui.loading = false;
 			};
 
 			var error = function(res) {
 				console.error(res);
-				$scope.fetching = false;
+				$scope.ui.loading = false;
 				$scope.isError = true;
 				$scope.errorResponse = res;
-				$scope.results = [];
+				$scope.api.results = [];
 			};
 			if ($scope.ui.mock.active) {
 				success({
@@ -248,6 +233,7 @@ angular.module("ptoApp")
 
 		// initial query from url params
 		// TODO error handling / 404
+		$scope.fetchAllConditions();
 		var params = $location.search();
 		$scope.ui.query = paramsToQuery($scope.ui.query, params);
 		if (!_.isEmpty(params)) {
