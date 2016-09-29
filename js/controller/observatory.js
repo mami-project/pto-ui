@@ -1,6 +1,6 @@
 angular.module("ptoApp")
 
-	.controller("ObservatoryCtrl", function($scope, $http, $location, config) {
+	.controller("ObservatoryCtrl", function($scope, $http, $location, mock, config) {
 		$scope.main.setActiveMenu("advanced");
 		$scope.directLink = $location.absUrl();
 
@@ -26,7 +26,7 @@ angular.module("ptoApp")
 				nPathGroups: 0,
 				nObservations: 0,
 				generate: function() {
-					return generateMock(this.nPathGroups, this.nObservations);
+					return mock(this.nPathGroups, this.nObservations);
 				}
 			},
 		};
