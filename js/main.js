@@ -36,10 +36,6 @@ ptoApp.config([
 				templateUrl: "html/uploadstats.html",
 				controller: "UploadStatsCtrl"
 			}).
-			when("/observatory", {
-				templateUrl: "html/observatory.html",
-				controller: "ObservatoryCtrl"
-			}).
 			when("/advanced", {
 				templateUrl: "html/advanced.html",
 				controller: "AdvancedCtrl",
@@ -136,7 +132,6 @@ ptoApp.controller("MainCtrl", function($scope) {
 	$scope.main.menu = [
 		{ label: "Home", href: "", active: false },
 		{ label: "Upload Statistics", href: "uploadstats", active: false },
-		{ label: "Observatory", href: "observatory", active: false },
 		{ label: "Advanced", href: "advanced", active: false }
 	];
 
@@ -180,60 +175,6 @@ ptoApp.controller("UploadStatsCtrl", function($scope, $http) {
 	};
 
 	$http.get(apibase + "/api/uploadstats").then(success, error);
-});
-
-ptoApp.controller("ObservatoryCtrl", function($scope, $http) {
-	$scope.setActiveMenu("observatory");
-
-	$scope.dip = "";
-	$scope.sip = "";
-	$scope.condition = "";
-	$scope.data = [];
-	$scope.dataTotal = [];
-
-	$scope.loadDataTotal = function() {
-		$scope.error_dt = false;
-		$scope.loading_dt = true;
-
-		var success = function(res) {
-			$scope.loading_dt = false;
-			$scope.dataTotal = res.data;
-		};
-
-		var error = function(res) {
-			$scope.loading_dt = false;
-			$scope.error_dt = true;
-			console.log(res);
-		};
-
-		$http.get(apibase + '/api/conditions_total?name=' + encodeURIComponent($scope.condition)).then(success, error);
-	};
-
-	$scope.loadData = function() {
-		$scope.error_d = false;
-		$scope.loading_d = true;
-
-		var success = function(res) {
-			$scope.loading_d = false;
-			//console.log(res.data);
-			_.each(res.data, function(item, i) {
-				_.each(item.data, function(condition, c_i) {
-					$scope.data.push({
-						sip: item._id,
-						condition: condition.condition,
-						count: condition.count
-					});
-				})
-			})
-		};
-
-		var error = function(res) {
-			$scope.loading_d = false;
-			$scope.error_d = true;
-		};
-
-		$http.get(apibase + '/api/conditions?dip=' + encodeURIComponent($scope.dip) + '&sip=' + encodeURIComponent($scope.sip)).then(success, error);
-	};
 });
 
 ptoApp.controller("AdvancedCtrl", function($scope, $http, $location) {
