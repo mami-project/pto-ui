@@ -150,7 +150,7 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="observation in result.observations" class="{{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
-					<td>{{ observation.analyzer_id }}</td>
+					<td>{{ observation.analyzer }}</td>
 					<td>{{ formatTime(observation.time.from['$date']) }}</td>
 					<td>{{ formatTime(observation.time.to['$date']) }}</td>
 					<td>{{ observation.conditions.join(', ') }}</td>
