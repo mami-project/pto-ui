@@ -4,7 +4,7 @@ angular.module("ptoApp")
 		$scope.main.setActiveMenu("advanced");
 		$scope.directLink = $location.absUrl();
 
-		// from visu.js
+		// from timeline.js TODO...
 		$scope.getTimeWindow = getTimeWindow;
 
 		$scope.ui = {
