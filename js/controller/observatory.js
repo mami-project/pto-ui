@@ -64,8 +64,8 @@ angular.module("ptoApp")
 				show: false,
 				display: function(query) {
 					return getConditionsString(query.conditions)
-						.replace(":", " AND ")
-						.replace(",", " OR ") ||
+						.replace(/:/g, " AND ")
+						.replace(/,/g, " OR ") ||
 						"( empty )";
 				}
 			},
@@ -282,7 +282,7 @@ angular.module("ptoApp")
 				$scope.ui.queries.push({
 					link: "#/observatory?" + queryString,
 					time: date.toLocaleString(),
-					data: queryObj,
+					data: _.clone(queryObj),
 					display: $scope.ui.pathCriteria.display(queryObj) +"\n"+ $scope.ui.conditions.display(queryObj) +"\n"+ $scope.ui.grouping.display(queryObj)
 				});
 			};

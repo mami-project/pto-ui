@@ -25,7 +25,7 @@ angular.module("ptoApp", [
 				when("/observatory", {
 					templateUrl: "html/observatory.html",
 					controller: "ObservatoryCtrl",
-					reloadOnSearch: false
+					//reloadOnSearch: false
 				}).
 				otherwise({
 					redirectoTo: "/"
