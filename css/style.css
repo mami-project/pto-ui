@@ -19,7 +19,6 @@ span.info {
 }
 
 .obs_path {
-	border: solid 0.1em gray;
 	padding: 0.3em;
 	margin-bottom: 1em;
 	overflow: auto;
@@ -109,6 +108,10 @@ section#observatory h3 .glyphicon {
 	color: #245580;
 }
 
+#observatory {
+	border-left: 1px solid #eee;
+}
+
 #mock-title {
 	cursor: pointer;
 }
@@ -119,6 +122,31 @@ section#observatory h3 .glyphicon {
 
 .piechart-container .number {
 	color: black;
+}
+
+aside#observatory-sidebar h5, aside#observatory-sidebar button {
+	display: inline-block;
+}
+aside#observatory-sidebar button {
+	float: right;
+	position: relative;
+	top: 7px;
+}
+
+aside#observatory-sidebar ol {
+	padding-left: 20px;
+}
+
+aside#observatory-sidebar dl {
+	margin-left: -19px;
+}
+
+aside#observatory-sidebar dt {
+	width: 60px;
+}
+
+aside#observatory-sidebar dd {
+	margin-left: 70px;
 }
 
 h3 code, h5 code {

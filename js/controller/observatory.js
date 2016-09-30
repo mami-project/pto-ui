@@ -35,6 +35,10 @@ angular.module("ptoApp")
 				// the user comes from a direct link,
 				// so we ignore storage data for mocking
 				$scope.ui.mock.active = false;
+				$scope.ui.queries = _.map($scope.ui.queries, function(query) {
+					query.show = false;
+					return query;
+				});
 				$scope.fetchResults($scope.input.query);
 			}
 		};
@@ -68,8 +72,8 @@ angular.module("ptoApp")
 			
 			grouping: {
 				show: false,
-				display: function(queryType) {
-					return queryType || "( empty )";
+				display: function(query) {
+					return query.type || "( empty )";
 				}
 			},
 
@@ -97,6 +101,8 @@ angular.module("ptoApp")
 						"( empty )"
 				}
 			},
+
+			queries: [],
 
 			mock: {
 				active: false,
@@ -272,6 +278,13 @@ angular.module("ptoApp")
 				$scope.directLink = $location.absUrl();
 				$scope.colorMap = getColorMap($scope.api.results);
 				$scope.ui.loading = false;
+				var date = new Date();
+				$scope.ui.queries.push({
+					link: "#/observatory?" + queryString,
+					time: date.toLocaleString(),
+					data: queryObj,
+					display: $scope.ui.pathCriteria.display(queryObj) +"\n"+ $scope.ui.conditions.display(queryObj) +"\n"+ $scope.ui.grouping.display(queryObj)
+				});
 			};
 
 			var error = function(res) {

@@ -1,6 +1,23 @@
 <div class="row">
-	<aside class="col-md-2">
-		
+	<aside class="col-md-2" id="observatory-sidebar">
+		<h5>Query History</h5>
+		<button class="btn btn-default btn-xs" ng-click="ui.queries = []">clear</button>
+		<ol>
+			<li ng-repeat="query in ui.queries track by $index">
+				<small ng-mouseover="query.show = true" ng-mouseleave="query.show = false">
+					<a href="{{ query.link }}">{{ query.time }}</a>
+					<dl class="dl-horizontal" ng-show="query.show">
+						<dt>Startpoint:</dt><dd>{{ query.data.sip }}</dd>
+						<dt>On path:</dt><dd>{{ query.data.on_path }}</dd>
+						<dt>Endpoint:</dt><dd>{{ query.data.dip }}</dd>
+						<dt>From:</dt><dd>{{ query.data.from }}</dd>
+						<dt>To:</dt><dd>{{ query.data.to }}</dd>
+						<dt>Conditions:</dt><dd>{{ ui.conditions.display(query.data) }}</dd>
+						<dt>Grouping:</dt><dd>{{ ui.grouping.display(query.data) }}</dd>
+					</dl>
+				</small>
+			</li>
+		</ol>
 	</aside>
 	<section class="col-md-10" id="observatory">
 		<h1>Observatory</h1>
@@ -139,7 +156,7 @@
 				<span class="glyphicon glyphicon-{{ ui.grouping.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span>
 				 Grouping 
 				 <small>
-				 	<code>{{ ui.grouping.display(ui.grouping.type) }}</code>
+				 	<code>{{ ui.grouping.display(input.query) }}</code>
 				 </small>
 			</h3>
 			<section ng-show="ui.grouping.show">
@@ -223,6 +240,7 @@
 			<!--Currently we know about <span id="results_max">{{ maxresults }}</span> paths in total.</p>-->
 			<div id="show_data">
 				<div class="obs_path" ng-repeat="(idx, result) in api.results">
+				<hr>
 					<div class="pie-chart-container well col-sm-6" ng-if="ui.render.pieChart">
 						<piechart renderdata="result" colormap="colorMap[idx]"></piechart>
 					</div>
