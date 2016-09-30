@@ -1,11 +1,42 @@
 angular.module("ptoApp")
 
-	.controller("ObservatoryCtrl", function($scope, $http, $location, mock, config) {
+	.controller("ObservatoryCtrl", function($scope, $http, $location, mock, userStorage, config) {
 		$scope.main.setActiveMenu("advanced");
 		$scope.directLink = $location.absUrl();
 
 		// from timeline.js TODO...
 		$scope.getTimeWindow = getTimeWindow;
+
+		var init = function() {
+			$scope.fetchAllConditions();
+
+			// user storage init
+			var userUI = userStorage.load("ui");
+			if (userUI) {
+				_.each(userUI, function(v, k) {
+					if (!_.isUndefined($scope.ui[k])) {
+						_.extend($scope.ui[k], v);
+					}
+				});
+				// :( in case the user closed the window during
+				// query loading
+				$scope.ui.loading = false;
+			}
+			$scope.$watch('ui', function(newValue, oldValue) {
+				console.log("ui change", newValue, oldValue);
+				userStorage.save("ui", newValue);
+			}, true);
+
+			// url parameter init
+			var params = $location.search();
+			_.extend($scope.input.query, paramsToQuery($scope.input.query, params));
+			if (!_.isEmpty(params)) {
+				// the user comes from a direct link,
+				// so we ignore storage data for mocking
+				$scope.ui.mock.active = false;
+				$scope.fetchResults($scope.input.query);
+			}
+		};
 
 		$scope.ui = {
 			
@@ -36,7 +67,6 @@ angular.module("ptoApp")
 			
 			grouping: {
 				show: false,
-				type: 'default',
 				display: function(queryType) {
 					return queryType || "( empty )";
 				}
@@ -66,17 +96,6 @@ angular.module("ptoApp")
 						"( empty )"
 				}
 			},
-			
-			query: {
-				skip: 0,
-				limit: 0,
-				sip: "",
-				dip: "",
-				on_path: "",
-				from: 0,
-				to: 1567204529149,
-				conditions: []
-			},
 
 			mock: {
 				active: false,
@@ -87,6 +106,20 @@ angular.module("ptoApp")
 					return mock(this.nPathGroups, this.nObservations);
 				}
 			},
+		};
+
+		$scope.input = {
+			query: {
+				type: "default",
+				skip: 0,
+				limit: 0,
+				sip: "",
+				dip: "",
+				on_path: "",
+				from: 0,
+				to: 1567204529149,
+				conditions: []
+			}
 		};
 
 		$scope.api = {
@@ -208,11 +241,12 @@ angular.module("ptoApp")
 
 			console.log('query object', queryObj);
 			var queryString = getQueryString(queryObj);
+			
 			$location.search(queryString);
 
 			var success = function(res) {
 				console.log("query response", res.data);
-				if ($scope.ui.grouping.type === 'default' && !$scope.ui.mock.active) {
+				if ($scope.input.query.type === 'default' && !$scope.ui.mock.active) {
 					res.data.results = [{
 						sip: "", dip: "",
 						observations: res.data.results
@@ -245,26 +279,18 @@ angular.module("ptoApp")
 			};
 			if ($scope.ui.mock.active) {
 				if ($scope.ui.mock.error) {
-					return error({ status: 404 })
+					return error({ status: 404 });
 				}
-				return success({ data: queryObj })
+				return success({ data: queryObj });
 			}
-			var endPoint = ($scope.ui.grouping.type === 'default') ? '/api/raw/observations?' : '/api/observations?';
+			var endPoint = ($scope.input.query.type === 'default') ? '/api/raw/observations?' : '/api/observations?';
 			$http.get(config.apibase + endPoint + queryString).then(success, error);
 		};
 
 		$scope.nextPage = function() {
-			$scope.ui.query.skip = parseInt($scope.ui.query.limit) + parseInt($scope.ui.query.skip);
-			$scope.fetchResults($scope.ui.query);
+			$scope.input.query.skip = parseInt($scope.input.query.limit) + parseInt($scope.input.query.skip);
+			$scope.fetchResults($scope.input.query);
 		};
 
-		// initial query from url params
-		// TODO error handling / 404
-		$scope.fetchAllConditions();
-		var params = $location.search();
-		$scope.ui.query = paramsToQuery($scope.ui.query, params);
-		if (!_.isEmpty(params)) {
-			$scope.fetchResults($scope.ui.query);
-		}
-
+		init();
 	});

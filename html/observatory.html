@@ -30,7 +30,7 @@
 				 Path Criteria 
 				 <small>
 				 	<code>
-				 		{{ ui.pathCriteria.display(ui.query) }}
+				 		{{ ui.pathCriteria.display(input.query) }}
 				 	</code>
 				 </small>
 			</h3>
@@ -40,23 +40,23 @@
 				</p>
 				<div class="form-group">
 					<label>Startpoint</label>
-					<input id="sip_ips" type="text" class="form-control" placeholder="" ng-model="ui.query.sip" />
+					<input id="sip_ips" type="text" class="form-control" placeholder="" ng-model="input.query.sip" />
 					<small class="text-muted">Enter an IPv4 or IPv6 address.</small> 
 				</div>
 				<div class="form-group">
 					<label>On path</label>
-					<input id="on_path_ips" type="text" class="form-control" placeholder="" ng-model="ui.query.on_path" />
+					<input id="on_path_ips" type="text" class="form-control" placeholder="" ng-model="input.query.on_path" />
 					<small class="text-muted">Enter IPv4 or IPv6 addresses that should be contained within the path. Use comma to separate multiple addresses.</small>
 				</div>
 				<div class="form-group">
 					<label>Endpoint</label>
-					<input id="dip_ips" type="text" class="form-control" placeholder="" ng-model="ui.query.dip" />
+					<input id="dip_ips" type="text" class="form-control" placeholder="" ng-model="input.query.dip" />
 					<small class="text-muted">Enter an IPv4 or IPv6 address.</small>
 				</div>
 				<div class="form-group">
 					<label>From Date</label>
 					<div class="input-group">
-					    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="ui.query.from" is-open="ui.pathCriteria.calendarFrom" save-as="number"/>
+					    <input type="text" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="input.query.from" is-open="ui.pathCriteria.calendarFrom" save-as="number"/>
 					    <span class="input-group-btn">
 					        <button
 					        	type="button"
@@ -75,7 +75,7 @@
 					    	type="text"
 							class="form-control"
 							datetime-picker="dd MMM yyyy HH:mm"
-							ng-model="ui.query.to"
+							ng-model="input.query.to"
 							is-open="ui.pathCriteria.calendarTo"
 							save-as="number"/>
 					    <span class="input-group-btn">
@@ -95,14 +95,14 @@
 				<span class="glyphicon glyphicon-{{ ui.conditions.show ? 'collapse-down' : 'expand'}}" aria-hidden="true"></span>
 				 Conditions 
 				 <small>
-				 	<code>{{ ui.conditions.display(ui.query) }}</code>
+				 	<code>{{ ui.conditions.display(input.query) }}</code>
 				 </small>
 			</h3>
 			<section ng-show="ui.conditions.show">
 				<p>
 					<em>Specify observation conditions.</em>
 				</p>
-				<fieldset ng-repeat="(idx, condition) in ui.query.conditions">
+				<fieldset ng-repeat="(idx, condition) in input.query.conditions">
 				<!--<legend>{{ condition.op.length > 0 ? condition.op + " " + condition.name : condition.name }}</legend>-->
 					<div class="form-group" ng-if="idx > 0">
 						<label>Operator</label>
@@ -122,13 +122,13 @@
 				</fieldset>
 				<button
 					type="button"
-					ng-click="(ui.query.conditions.length <= 1) ? ui.query.conditions.push({ name: ''}) : ui.query.conditions.push({ name: '', op: ':'})"
+					ng-click="(input.query.conditions.length <= 1) ? input.query.conditions.push({ name: ''}) : input.query.conditions.push({ name: '', op: ':'})"
 					class="btn btn-default"
 					aria-label="add condition">
 					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</button>
 				<button type="button"
-					ng-click="ui.query.conditions.pop()"
+					ng-click="input.query.conditions.pop()"
 					class="btn btn-default"
 					aria-label="remove condition">
 					<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
@@ -149,13 +149,13 @@
 				<fieldset>
 					<div class="radio">
 						<label>
-						<input type="radio" value="default" ng-model="ui.grouping.type">
+						<input type="radio" value="default" ng-model="input.query.type">
 							Standard Query
 						</label>
 					</div>
 					<div class="radio">
 						<label>
-						<input type="radio" value="grouped" ng-model="ui.grouping.type">
+						<input type="radio" value="grouped" ng-model="input.query.type">
 							Group by Network Paths
 						</label>
 					</div>	
@@ -167,11 +167,14 @@
 				 Rendering 
 				<small>
 					<code>
-						{{ ui.render.display(ui.query) }}
+						{{ ui.render.display(input.query) }}
 					</code>
 				</small>
 			</h3>
 			<section ng-show="ui.render.show">
+				<p>
+					<em>Choose from the rendering types.</em>
+				</p>
 				<div class="checkbox">
 					<label>
 						<input type="checkbox" ng-model="ui.render.pieChart"> Pie Chart
@@ -191,7 +194,7 @@
 			<hr>
 			<button
 				type="button"
-				ng-click="fetchResults(ui.query)"
+				ng-click="fetchResults(input.query)"
 				class="btn btn-primary"
 				aria-label="submit">
 				<span ng-show="!ui.loading" class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -204,7 +207,7 @@
 			 Results 
 			<small>
 				<code class="{{ isError ? 'error' : '' }}">
-					{{ ui.results.display(ui.query) }}
+					{{ ui.results.display(input.query) }}
 				</code>
 			</small>
 		</h3>
@@ -262,8 +265,8 @@
 					</table>
 				</div>
 			</div>
-			<div ng-show="ui.query.limit > 0">
-				<p>page #<span id="page_num">{{ ui.query.skip/ui.query.limit }}</span> <a id="nextlink" ng-click="nextPage()"> next</a></p>
+			<div ng-show="input.query.limit > 0">
+				<p>page #<span id="page_num">{{ input.query.skip/input.query.limit }}</span> <a id="nextlink" ng-click="nextPage()"> next</a></p>
 			<div>
 		</section>
 	</section>

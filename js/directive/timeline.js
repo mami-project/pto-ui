@@ -93,6 +93,8 @@ angular.module("ptoApp.timeline", [])
 					// 	});
 					// $svg.call(tip);
 
+					console.log("tl pg", pathGroup);
+
 					var timeWindow = getTimeWindow(pathGroup.observations);
 
 					// create a timeline for each condition

@@ -2,6 +2,7 @@ angular.module("ptoApp", [
 	"ptoApp.piechart",
 	"ptoApp.timeline",
 	"ptoApp.mock",
+	"ptoApp.userStorage",
 	"ngRoute",
 	'ui.bootstrap',
 	'ui.bootstrap.datetimepicker'
