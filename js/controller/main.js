@@ -5,8 +5,8 @@ angular.module("ptoApp")
 
 		$scope.main.menu = [
 			{ label: "Home", href: "", active: false },
+			{ label: "Observatory", href: "observatory", active: false },
 			{ label: "Upload Statistics", href: "uploadstats", active: false },
-			{ label: "Observatory", href: "observatory", active: false }
 		];
 
 		$scope.main.setActiveMenu = function(href) {

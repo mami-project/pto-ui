@@ -41,6 +41,31 @@ angular.module("ptoApp")
 					return queryType || "( empty )";
 				}
 			},
+
+			render: {
+				show: false,
+				pieChart: true,
+				table: true,
+				timeline: true,
+				display: function() {
+					return _.without([
+						(this.pieChart ? "pie chart" : null),
+						(this.table ? "table" : null),
+						(this.timeline ? "timeline" : null)
+					], null).join(", ") || "( empty )";
+				}
+			},
+
+			results: {
+				show: true,
+				display: function() {
+					return ($scope.isError ? $scope.errorResponse.status : false) ||
+						(($scope.api.results.length == 1) ?
+						$scope.api.results[0].observations.length :
+						$scope.api.results.length) ||
+						"( empty )"
+				}
+			},
 			
 			query: {
 				skip: 0,
@@ -55,6 +80,7 @@ angular.module("ptoApp")
 
 			mock: {
 				active: false,
+				error: false,
 				nPathGroups: 0,
 				nObservations: 0,
 				generate: function() {
@@ -170,6 +196,7 @@ angular.module("ptoApp")
 		};
 
 		$scope.fetchResults = function(queryObj) {
+			//return;
 			$scope.ui.loading = true;
 			$scope.isError = false;
 			$scope.errorResponse = {};
@@ -217,13 +244,13 @@ angular.module("ptoApp")
 				$scope.api.results = [];
 			};
 			if ($scope.ui.mock.active) {
-				success({
-					data: queryObj
-				})
-			} else {
-				var endPoint = ($scope.ui.grouping.type === 'default') ? '/api/raw/observations?' : '/api/observations?';
-				$http.get(config.apibase + endPoint + queryString).then(success, error);
+				if ($scope.ui.mock.error) {
+					return error({ status: 404 })
+				}
+				return success({ data: queryObj })
 			}
+			var endPoint = ($scope.ui.grouping.type === 'default') ? '/api/raw/observations?' : '/api/observations?';
+			$http.get(config.apibase + endPoint + queryString).then(success, error);
 		};
 
 		$scope.nextPage = function() {

@@ -2,125 +2,129 @@ body {
 }
 
 .starter-template {
-  text-align: center;
+	text-align: center;
 }
 
 span.error {
-  color: red;
+	color: red;
 }
 
 span.info {
-  color: orange;
+	color: orange;
 }
 
 .obs_obs {
-  margin-left: 1em;
-  margin-bottom: 1em;
+	margin-left: 1em;
+	margin-bottom: 1em;
 }
 
 .obs_path {
-  border: solid 0.1em gray;
-  padding: 0.3em;
-  margin-bottom: 1em;
-  overflow: auto;
-  line-height: 150%;
+	border: solid 0.1em gray;
+	padding: 0.3em;
+	margin-bottom: 1em;
+	overflow: auto;
+	line-height: 150%;
 }
 
 .path {
-  font-size: 90%;
+	font-size: 90%;
 }
 
 tr.highlighted {
-  color: magenta;
+	color: magenta;
 }
 
 tr.rejected {
-  display: none;
+	display: none;
 }
 
 svg > g.condition-group > rect {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .pointer {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 timeline {
-  padding-bottom: 20px;
-  display:block;
+	padding-bottom: 20px;
+	display:block;
 }
 
 timeline svg {
-  display: block;
-  margin: auto;
+	display: block;
+	margin: auto;
 }
 
 pie-chart {
-  padding-bottom: 20px;
+	padding-bottom: 20px;
 }
 
 .piechart-checkbox-group {
-  min-width: 210px;
+	min-width: 210px;
 }
 
 .dont-expand {
-  display: block;
-  float: left;
+	display: block;
+	float: left;
 }
 
 .clearfix {
-  clear: both;
+	clear: both;
 }
 
 .svg-container {
-  padding-left: 20px;
-  padding-right: 20px;
+	padding-left: 20px;
+	padding-right: 20px;
 }
 
 .pie-chart-container {
-  padding-right: 20px;
+	padding-right: 20px;
 }
 
 .result-overview {
-  padding-top: 12px;
+	padding-top: 12px;
 }
 
 .glyphicon.spinning {
-    animation: spin 1s infinite linear;
-    -webkit-animation: spin2 1s infinite linear;
+		animation: spin 1s infinite linear;
+		-webkit-animation: spin2 1s infinite linear;
 }
 
 @keyframes spin {
-    from { transform: scale(1) rotate(0deg); }
-    to { transform: scale(1) rotate(360deg); }
+		from { transform: scale(1) rotate(0deg); }
+		to { transform: scale(1) rotate(360deg); }
 }
 
 @-webkit-keyframes spin2 {
-    from { -webkit-transform: rotate(0deg); }
-    to { -webkit-transform: rotate(360deg); }
+		from { -webkit-transform: rotate(0deg); }
+		to { -webkit-transform: rotate(360deg); }
 }
 
-#query-form h3 {
-  cursor: pointer;
+section#observatory h3 {
+	cursor: pointer;
 }
 
-#query-form h3 .glyphicon {
-  color: #245580;
+section#observatory h3 .glyphicon {
+	color: #245580;
 }
 
 #mock-title {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 #mock-title .glyphicon {
-  color: #245580;
+	color: #245580;
 }
 
 .piechart-container .number {
-  color: black;
+	color: black;
 }
 
-h3 code {
-  /*float: right;*/
+h3 code, h5 code {
+	color: hsl(208, 56%, 56%);
+}
+
+h3 code.error, h5 code.error {
+	color: #c7254e;
 }
