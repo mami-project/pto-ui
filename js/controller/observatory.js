@@ -23,13 +23,14 @@ angular.module("ptoApp")
 				$scope.ui.loading = false;
 			}
 			$scope.$watch('ui', function(newValue, oldValue) {
-				console.log("ui change", newValue, oldValue);
+				//console.log("ui change", newValue, oldValue);
 				userStorage.save("ui", newValue);
 			}, true);
 
 			// url parameter init
 			var params = $location.search();
 			_.extend($scope.input.query, paramsToQuery($scope.input.query, params));
+			console.log("input", $scope.input);
 			if (!_.isEmpty(params)) {
 				// the user comes from a direct link,
 				// so we ignore storage data for mocking
@@ -133,6 +134,7 @@ angular.module("ptoApp")
 
 		var paramsToQuery = function(uiQuery, params) {
 			var query = _.extend({}, uiQuery, params);
+			//console.log("ui query", query);
 			if (_.isString(query.conditions)) {
 				var reduction = _.reduce(query.conditions.split(""), function(iter, char) {
 					//console.log("params to query", iter, char);
@@ -150,6 +152,8 @@ angular.module("ptoApp")
 				}, { lastWord: "", result: [ {name: ""} ], idx: 0 });
 				query.conditions = reduction.result;
 			}
+			query.from = parseInt(query.from);
+			query.to = parseInt(query.to);
 			//console.log("conditions", query.conditions);
 			return query;
 		};
