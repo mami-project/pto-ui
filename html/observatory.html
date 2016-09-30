@@ -220,7 +220,7 @@
 			<!--Currently we know about <span id="results_max">{{ maxresults }}</span> paths in total.</p>-->
 			<div id="show_data">
 				<div class="obs_path" ng-repeat="(idx, result) in api.results">
-					<div class="pie-chart-container well col-sm-6">
+					<div class="pie-chart-container well col-sm-6" ng-if="ui.render.pieChart">
 						<piechart renderdata="result" colormap="colorMap[idx]"></piechart>
 					</div>
 					<div class="col-sm-6 result-overview">
@@ -231,7 +231,7 @@
 						</dl>
 					</div>
 					<div class="clearfix"></div>
-					<div class="well">
+					<div class="well" ng-if="ui.render.timeline">
 						<timeline
 							renderdata="result"
 							colormap="colorMap[idx]"
@@ -240,7 +240,7 @@
 							click="timeLineClick(group, obs)">
 						</timeline>
 					</div>
-					<table class="table table-condensed">
+					<table class="table table-condensed" ng-if="ui.render.table">
 						<thead>
 							<tr>
 								<th>Analyzer</th>
