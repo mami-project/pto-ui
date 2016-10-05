@@ -10,9 +10,9 @@
         <tbody>
             <tr>
                 <td>Uploads total</td>
-                <td ng-show="{{ loading }}">Loading...</td>
+                <td ng-show="loading">Loading...</td>
                 <td ng-show="{{ error }}"><span class="error">(error: could not load data)</span></td>
-                <td ng-show="{{ total !== '' }}">{{ total }}</td>
+                <td ng-show="total !== '' ">{{ total }}</td>
             </tr>
         </tbody>
     </table>
@@ -25,11 +25,11 @@
         </tr>
     </thead>
     <tbody id="measurement_campaigns">
-        <tr ng-show="{{ error }}">
+        <tr ng-show="error">
             <td><span class="error">(error: could not load data)</span></td>
             <td><span class="error">(error: could not load data)</span></td>
         </tr>
-        <tr ng-show="{{ loading }}">
+        <tr ng-show="loading">
             <td>Loading...</td>
             <td>Loading...</td>
         </tr>
