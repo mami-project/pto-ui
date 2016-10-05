@@ -4,7 +4,7 @@ angular.module("ptoApp")
 		$scope.main = {};
 
 		$scope.main.menu = [
-			{ label: "Home", href: "", active: false },
+			//{ label: "Home", href: "", active: false },
 			{ label: "Observatory", href: "observatory", active: false },
 			{ label: "Upload Statistics", href: "uploadstats", active: false },
 		];

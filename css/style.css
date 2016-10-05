@@ -100,16 +100,20 @@ pie-chart {
 		to { -webkit-transform: rotate(360deg); }
 }
 
-section#observatory h3 {
+section#observatory .panel-heading {
 	cursor: pointer;
 }
 
-section#observatory h3 .glyphicon {
-	color: #245580;
+section#observatory .panel-heading .glyphicon {
+	color: #d9230f;
 }
 
 #observatory {
 	border-left: 1px solid #eee;
+}
+
+nav.navbar {
+	border-bottom: 1px solid #eee;
 }
 
 #mock-title {
@@ -117,11 +121,14 @@ section#observatory h3 .glyphicon {
 }
 
 #mock-title .glyphicon {
-	color: #245580;
+	color: #d9230f;
 }
 
 .piechart-container .number {
 	color: black;
+}
+aside#observatory-sidebar {
+	border-bottom: 1px solid #eee;
 }
 
 aside#observatory-sidebar h5, aside#observatory-sidebar button {
@@ -150,7 +157,16 @@ aside#observatory-sidebar dd {
 }
 
 h3 code, h5 code {
-	color: hsl(208, 56%, 56%);
+	/*color: hsl(208, 56%, 56%);*/
+	color: #d9230f;
+}
+
+p code {
+	color: #d9230f;
+}
+
+.float-right {
+	float: right;
 }
 
 h3 code.error, h5 code.error {
@@ -159,7 +175,7 @@ h3 code.error, h5 code.error {
 
 th.clickable {
 	cursor: pointer;
-	color: #245580;
+	color: #d9230f;
 }
 
 tr.clickable {
@@ -167,5 +183,10 @@ tr.clickable {
 }
 
 tr.clickable:hover {
-	color: #245580;
+	color: #d9230f;
+}
+
+.divider {
+	height: 1px;
+	margin-bottom: 18px;
 }

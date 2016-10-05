@@ -6,6 +6,7 @@ angular.module("ptoApp", [
 	"ngRoute",
 	'ui.bootstrap',
 	'ui.bootstrap.datetimepicker',
+	'angular-loading-bar'
 	//'ui.boostrap.modal',
 ])
 	.constant('config', {
