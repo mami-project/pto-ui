@@ -379,6 +379,9 @@ angular.module("ptoApp")
 			return _.isEmpty(value) ? "( empty )" : value;
 		};
 		$scope.data = {};
+		$scope.close = function() {
+			$uibModalInstance.close();
+		};
 		var success = function(res) {
 			$scope.ui.loading = false;
 			$scope.ui.error = false;

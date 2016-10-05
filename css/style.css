@@ -108,6 +108,11 @@ section#observatory .panel-heading .glyphicon {
 	color: #d9230f;
 }
 
+.clickable.glyphicon {
+	color: #d9230f;
+	cursor: pointer;
+}
+
 #observatory {
 	border-left: 1px solid #eee;
 }
