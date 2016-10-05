@@ -1,22 +1,10 @@
-<h1>Upload statistics</h1>
-    <p>Lorem ipsum</p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Statistic</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Uploads total</td>
-                <td ng-show="loading">Loading...</td>
-                <td ng-show="{{ error }}"><span class="error">(error: could not load data)</span></td>
-                <td ng-show="total !== '' ">{{ total }}</td>
-            </tr>
-        </tbody>
-    </table>
-<h2>Measurement campaigns</h2>
+<h1>Measurement campaigns</h1>
+<p>
+    <strong>Total Uploads</strong>
+    <span ng-if="loading">Loading...</span>
+    <span ng-if="error"><span class="error">(error: could not load data)</span></span>
+    <span ng-if="total !== '' ">{{ total }}</span>
+</p>
 <table class="table">
     <thead>
         <tr>
