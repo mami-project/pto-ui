@@ -269,27 +269,50 @@
 								click="timeLineClick(group, obs)">
 							</timeline>
 						</div>
-						<table class="table table-condensed" ng-if="ui.render.table">
-							<thead>
-								<tr>
-									<th>Analyzer</th>
-									<th class="clickable" ng-click="ui.table.sort('time.from.$date')">From <span ng-show="ui.table.orderBy === 'time.from.$date'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
-									<th class="clickable" ng-click="ui.table.sort('time.to.$date')">To <span ng-show="ui.table.orderBy === 'time.to.$date'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
-									<th>Conditions</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr
-									ng-repeat="observation in result.observations | orderBy:ui.table.orderBy:ui.table.rev"
-									ng-click="ui.details.show(observation)"
-									class="clickable {{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
-									<td>{{ observation.analyzer }}</td>
-									<td>{{ main.formatTime(observation.time.from['$date']) }}</td>
-									<td>{{ main.formatTime(observation.time.to['$date']) }}</td>
-									<td>{{ observation.conditions.join(', ') }}</td>
-								</tr>
-							</tbody>
-						</table>
+						<div ng-if="ui.render.table">
+							<nav aria-label="Page navigation">
+								<ul class="pagination">
+									<li class="{{ forgetUI.table.currentPage > 0 ? '' : 'disabled' }}">
+										<a ng-click="forgetUI.table.previous()" aria-label="Previous">
+											<span aria-hidden="true">&laquo;</span>
+										</a>
+									</li>
+									<li
+										ng-repeat="(page, p) in forgetUI.table.pages track by $index"
+										class="{{ forgetUI.table.currentPage === page ? 'active' : '' }}"
+										ng-show="forgetUI.table.showPagination(page)">
+										<a ng-click="forgetUI.table.toPage(page)">{{ page + 1 }}</a>
+									</li>
+									<li class="{{ forgetUI.table.currentPage < forgetUI.table.pages.length ? '' : 'disabled'}}">
+										<a ng-click="forgetUI.table.next()" aria-label="Next">
+											<span aria-hidden="true">&raquo;</span>
+										</a>
+									</li>
+								</ul>
+							</nav>
+							<table class="table table-condensed" >
+								<thead>
+									<tr>
+										<th>Analyzer</th>
+										<th class="clickable" ng-click="ui.table.sort('time.from.$date')">From <span ng-show="ui.table.orderBy === 'time.from.$date'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
+										<th class="clickable" ng-click="ui.table.sort('time.to.$date')">To <span ng-show="ui.table.orderBy === 'time.to.$date'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
+										<th>Conditions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr
+										ng-repeat="(idx, observation) in result.observations | orderBy:ui.table.orderBy:ui.table.rev"
+										ng-show="forgetUI.table.isPage(idx)"
+										ng-click="ui.details.show(observation)"
+										class="clickable {{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
+										<td>{{ observation.analyzer }}</td>
+										<td>{{ main.formatTime(observation.time.from['$date']) }}</td>
+										<td>{{ main.formatTime(observation.time.to['$date']) }}</td>
+										<td>{{ observation.conditions.join(', ') }}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 				<div ng-show="input.query.limit > 0">

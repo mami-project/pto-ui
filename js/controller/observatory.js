@@ -1,8 +1,9 @@
 angular.module("ptoApp")
 
-	.controller("ObservatoryCtrl", function($scope, $http, $uibModal, $location, mock, userStorage, config) {
+	.controller("ObservatoryCtrl", function($scope, $http, $uibModal, cfpLoadingBar, $location, mock, userStorage, config) {
 		$scope.main.setActiveMenu("advanced");
 		$scope.directLink = $location.absUrl();
+		//cfpLoadingBar.start();
 
 		var getProperty = function(obj, arr) {
 			if (arr.length === 0) {
@@ -38,6 +39,7 @@ angular.module("ptoApp")
 			var params = $location.search();
 			_.extend($scope.input.query, paramsToQuery($scope.input.query, params));
 			console.log("input", $scope.input);
+			//cfpLoadingBar.complete();
 			if (!_.isEmpty(params)) {
 				// the user comes from a direct link,
 				// so we ignore storage data for mocking
@@ -108,7 +110,7 @@ angular.module("ptoApp")
 						this.rev = false;
 					}
 					this.orderBy = orderBy;
-				},
+				}
 			},
 
 			details: {
@@ -150,6 +152,36 @@ angular.module("ptoApp")
 					return mock(this.nPathGroups, this.nObservations);
 				}
 			},
+		};
+
+		$scope.forgetUI = {
+			table: {
+				isPage: function(idx) {
+					return Math.floor(idx / 20) === this.currentPage;
+				},
+				toPage: function(page) {
+					this.currentPage = page;
+				},
+				next: function() {
+					if (!(this.currentPage < this.pages.length - 1)) {
+						return;
+					}
+					this.currentPage += 1;
+				},
+				previous: function() {
+					if (this.currentPage === 0) {
+						return;
+					}
+					this.currentPage -= 1;
+				},
+				showPagination: function(page) {
+					return Math.abs(page - this.currentPage) <= 10 ||
+						(this.currentPage <= 10 && page <= 20) ||
+						(this.currentPage >= this.pages.length - 10 && page >= this.pages.length - 20);
+				},
+				currentPage: 0,
+				pages: [],
+			}
 		};
 
 		$scope.input = {
@@ -322,6 +354,7 @@ angular.module("ptoApp")
 					data: _.clone(queryObj),
 					display: $scope.ui.pathCriteria.display(queryObj) +"\n"+ $scope.ui.conditions.display(queryObj) +"\n"+ $scope.ui.grouping.display(queryObj)
 				});
+				$scope.forgetUI.table.pages = Array(Math.ceil(res.data.count / 20));
 			};
 
 			var error = function(res) {

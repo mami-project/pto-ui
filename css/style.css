@@ -195,3 +195,7 @@ tr.clickable:hover {
 	height: 1px;
 	margin-bottom: 18px;
 }
+
+nav li a {
+	cursor: pointer;
+}
