@@ -161,3 +161,11 @@ th.clickable {
 	cursor: pointer;
 	color: #245580;
 }
+
+tr.clickable {
+	cursor: pointer;
+}
+
+tr.clickable:hover {
+	color: #245580;
+}

@@ -265,15 +265,16 @@
 						<thead>
 							<tr>
 								<th>Analyzer</th>
-								<th class="clickable" ng-click="ui.table.sort('time.from.$date')">From <span ng-show="ui.table.orderBy === 'time.from.$date'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-down' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
-								<th class="clickable" ng-click="ui.table.sort('time.to.$date')">To <span ng-show="ui.table.orderBy === 'time.to.$date'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-down' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
+								<th class="clickable" ng-click="ui.table.sort('time.from.$date')">From <span ng-show="ui.table.orderBy === 'time.from.$date'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
+								<th class="clickable" ng-click="ui.table.sort('time.to.$date')">To <span ng-show="ui.table.orderBy === 'time.to.$date'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
 								<th>Conditions</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr
 								ng-repeat="observation in result.observations | orderBy:ui.table.orderBy:ui.table.rev"
-								class="{{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
+								ng-click="ui.details.show(observation)"
+								class="clickable {{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
 								<td>{{ observation.analyzer }}</td>
 								<td>{{ main.formatTime(observation.time.from['$date']) }}</td>
 								<td>{{ main.formatTime(observation.time.to['$date']) }}</td>

@@ -1,0 +1,61 @@
+<div class="modal-header">
+	<h3>Observation Details {{ data._id.$oid }}</h3>
+</div>
+<div class="modal-body">
+	<h4>JSON Raw</h4>
+	<pre>{{data}}</pre>
+	<h4>Properties</h4>
+	<dl class="dl dl-horizontal">
+		<dt>Time From<dt>
+		<dd>{{ main.formatTime(data.time.from['$date']) }}</dd>
+		<dt>Time To<dt>
+		<dd>{{ main.formatTime(data.time.to['$date']) }}</dd>
+		<dt>Analyzer<dt>
+		<dd>{{ data.analyzer }}</dd>
+		<dt>Value<dt>
+		<dd>{{ valueToString(data.value) }}</dd>
+		<dt>Sources<dt>
+		<dd>{{ sourcesToString(data.sources) }}</dd>
+		<dt>Action IDs<dt>
+		<dd>{{ aidsToString(data.action_ids) }}</dd>
+		<dt>Conditions<dt>
+		<dd>{{ data.conditions.join(", ") }}</dd>
+		<dt>Path<dt>
+		<dd>{{ data.path.join(", ") }}</dd>
+	</dl>
+	<h4>Uploads</h4>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Measurement Campaign</th>
+				<th
+					class="clickable"
+					ng-click="ui.table.sort('start_time.$date')">Start Time
+					<span
+						ng-show="ui.table.orderBy === 'start_time.$date'"
+						class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}"
+						aria-hidden="true"></span>
+				</th>
+				<th
+					class="clickable"
+					ng-click="ui.table.sort('stop_time.$date')">Stop Time
+					<span
+						ng-show="ui.table.orderBy === 'stop_time.$date'"
+						class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}"
+						aria-hidden="true"></span>
+				</th>
+				<th>Sequence</th>
+				<th>Format</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="upload in data.uploads | orderBy:ui.table.orderBy:ui.table.rev">
+				<td>{{ upload.msmntCampaign }}</td>
+				<td>{{ main.formatTime(upload.start_time.$date) }}</td>
+				<td>{{ main.formatTime(upload.stop_time.$date) }}</td>
+				<td>{{ upload.seq ? upload.seq : "( empty )" }}</td>
+				<td>{{ upload.format }}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

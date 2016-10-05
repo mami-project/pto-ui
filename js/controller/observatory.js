@@ -1,6 +1,6 @@
 angular.module("ptoApp")
 
-	.controller("ObservatoryCtrl", function($scope, $http, $location, mock, userStorage, config) {
+	.controller("ObservatoryCtrl", function($scope, $http, $uibModal, $location, mock, userStorage, config) {
 		$scope.main.setActiveMenu("advanced");
 		$scope.directLink = $location.absUrl();
 
@@ -109,6 +109,23 @@ angular.module("ptoApp")
 					}
 					this.orderBy = orderBy;
 				},
+			},
+
+			details: {
+				show: function(observation) {
+					$uibModal.open({
+						templateUrl: "html/observation-details.html",
+						controller: "ObervationDetailsCtrl",
+						resolve: {
+							observation: function() {
+								return observation;
+							},
+							main: function() {
+								return $scope.main;
+							},
+						}
+					}).result.then(function(){},function(){});
+				}
 			},
 
 			results: {
@@ -330,4 +347,48 @@ angular.module("ptoApp")
 		};
 
 		init();
+	})
+
+	.controller("ObervationDetailsCtrl", function($scope, main, observation, $uibModalInstance, $http, config) {
+		$scope.main = main;
+		$scope.ui = {
+			loading: true,
+			error: false,
+			table: {
+				rev: true,
+				orderBy: null,
+				sort: function(orderBy) {
+					if (orderBy === this.orderBy) {
+						this.rev = !this.rev
+					} else {
+						this.rev = false;
+					}
+					this.orderBy = orderBy;
+				},
+			}
+		};
+		$scope.aidsToString = function(aids) {
+			return _.map(aids, function(aid) {
+				return aid.id + ":" + aid.valid;
+			}).join(", ");
+		};
+		$scope.sourcesToString = function(sources) {
+			return _.pluck(sources, "$oid").join(", ");
+		};
+		$scope.valueToString = function(value) {
+			return _.isEmpty(value) ? "( empty )" : value;
+		};
+		$scope.data = {};
+		var success = function(res) {
+			$scope.ui.loading = false;
+			$scope.ui.error = false;
+			console.log("obs details res", res);
+			$scope.data = res.data.result;
+		};
+		var error = function(err) {
+			$scope.ui.loading = false;
+			$scope.ui.error = err;
+			console.log("obs details err", err);
+		};
+		$http.get(config.apibase + "/api/raw/single?oid=" + observation.id.$oid).then(success, error);
 	});

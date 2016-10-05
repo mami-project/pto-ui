@@ -5,7 +5,8 @@ angular.module("ptoApp", [
 	"ptoApp.userStorage",
 	"ngRoute",
 	'ui.bootstrap',
-	'ui.bootstrap.datetimepicker'
+	'ui.bootstrap.datetimepicker',
+	//'ui.boostrap.modal',
 ])
 	.constant('config', {
 		apibase: "https://observatory.mami-project.eu/pto",
