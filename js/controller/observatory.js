@@ -4,6 +4,13 @@ angular.module("ptoApp")
 		$scope.main.setActiveMenu("advanced");
 		$scope.directLink = $location.absUrl();
 
+		var getProperty = function(obj, arr) {
+			if (arr.length === 0) {
+				return obj;
+			}
+			return getProperty(obj[arr[0]], arr.slice(1, arr.length));
+		};
+
 		// from timeline.js TODO...
 		$scope.getTimeWindow = getTimeWindow;
 
@@ -89,6 +96,19 @@ angular.module("ptoApp")
 						(this.timeline ? "timeline" : null)
 					], null).join(", ") || "( empty )";
 				}
+			},
+
+			table: {
+				rev: true,
+				orderBy: null,
+				sort: function(orderBy) {
+					if (orderBy === this.orderBy) {
+						this.rev = !this.rev
+					} else {
+						this.rev = false;
+					}
+					this.orderBy = orderBy;
+				},
 			},
 
 			results: {

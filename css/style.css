@@ -156,3 +156,8 @@ h3 code, h5 code {
 h3 code.error, h5 code.error {
 	color: #c7254e;
 }
+
+th.clickable {
+	cursor: pointer;
+	color: #245580;
+}
