@@ -158,34 +158,42 @@ angular.module("ptoApp")
 			},
 		};
 
-		$scope.forgetUI = {
-			table: {
-				isPage: function(idx) {
-					return Math.floor(idx / 20) === this.currentPage;
-				},
-				toPage: function(page) {
-					this.currentPage = page;
-				},
-				next: function() {
-					if (!(this.currentPage < this.pages.length - 1)) {
-						return;
-					}
-					this.currentPage += 1;
-				},
-				previous: function() {
-					if (this.currentPage === 0) {
-						return;
-					}
-					this.currentPage -= 1;
-				},
-				showPagination: function(page) {
-					return Math.abs(page - this.currentPage) <= 10 ||
-						(this.currentPage <= 10 && page <= 20) ||
-						(this.currentPage >= this.pages.length - 10 && page >= this.pages.length - 20);
-				},
-				currentPage: 0,
-				pages: [],
+		var Table = function(table) {
+			this.currentPage = table.currentPage;
+			this.pages = table.pages;
+		};
+
+		Table.prototype.isPage = function(idx) {
+			return Math.floor(idx / 20) === this.currentPage;
+		};
+
+		Table.prototype.toPage = function(page) {
+			this.currentPage = page;
+		};
+
+		Table.prototype.next = function() {
+			if (!(this.currentPage < this.pages.length - 1)) {
+				return;
 			}
+			this.currentPage += 1;
+		};
+
+		Table.prototype.previous = function() {
+			if (this.currentPage === 0) {
+				return;
+			}
+			this.currentPage -= 1;
+		};
+
+		Table.prototype.showPagination = function(page) {
+			return Math.abs(page - this.currentPage) <= 10 ||
+				(this.currentPage <= 10 && page <= 20) ||
+				(this.currentPage >= this.pages.length - 10 && page >= this.pages.length - 20);
+		};
+
+
+		$scope.forgetUI = {
+			tables: [],
 		};
 
 		$scope.input = {
@@ -312,7 +320,6 @@ angular.module("ptoApp")
 		};
 
 		$scope.fetchResults = function(queryObj) {
-			//return;
 			$scope.ui.loading = true;
 			$scope.isError = false;
 			$scope.errorResponse = {};
@@ -324,8 +331,6 @@ angular.module("ptoApp")
 
 			console.log('query object', queryObj);
 			var queryString = getQueryString(queryObj);
-			
-			$location.search(queryString);
 
 			var success = function(res) {
 				console.log("query response", res.data);
@@ -352,13 +357,21 @@ angular.module("ptoApp")
 				$scope.colorMap = getColorMap($scope.api.results);
 				$scope.ui.loading = false;
 				var date = new Date();
+				$scope.forgetUI.tables = _.map($scope.api.results, function(res) {
+					return new Table({
+						currentPage: 0,
+						pages: Array(Math.ceil(res.observations.length / 20)),
+					});
+				});
+				if ($scope.ui.mock.active) {
+					return;
+				}
 				$scope.ui.queries.unshift({
 					link: "#/observatory?" + queryString,
 					time: date.toLocaleString(),
 					data: _.clone(queryObj),
 					display: $scope.ui.pathCriteria.display(queryObj) +"\n"+ $scope.ui.conditions.display(queryObj) +"\n"+ $scope.ui.grouping.display(queryObj)
 				});
-				$scope.forgetUI.table.pages = Array(Math.ceil(res.data.count / 20));
 			};
 
 			var error = function(res) {
@@ -372,8 +385,11 @@ angular.module("ptoApp")
 				if ($scope.ui.mock.error) {
 					return error({ status: 404 });
 				}
+				console.log("mocking", queryObj);
 				return success({ data: queryObj });
 			}
+			$location.search(queryString);
+			console.log("starting fetch")
 			var endPoint = ($scope.input.query.type === 'default') ? '/api/raw/observations?' : '/api/observations?';
 			$http.get(config.apibase + endPoint + queryString).then(success, error);
 		};

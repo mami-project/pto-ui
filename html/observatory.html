@@ -275,19 +275,19 @@
 						<div ng-if="ui.render.table">
 							<nav aria-label="Page navigation">
 								<ul class="pagination">
-									<li class="{{ forgetUI.table.currentPage > 0 ? '' : 'disabled' }}">
-										<a ng-click="forgetUI.table.previous()" aria-label="Previous">
+									<li class="{{ forgetUI.tables[idx].currentPage > 0 ? '' : 'disabled' }}">
+										<a ng-click="forgetUI.tables[idx].previous()" aria-label="Previous">
 											<span aria-hidden="true">&laquo;</span>
 										</a>
 									</li>
 									<li
-										ng-repeat="(page, p) in forgetUI.table.pages track by $index"
-										class="{{ forgetUI.table.currentPage === page ? 'active' : '' }}"
-										ng-show="forgetUI.table.showPagination(page)">
-										<a ng-click="forgetUI.table.toPage(page)">{{ page + 1 }}</a>
+										ng-repeat="(page, p) in forgetUI.tables[idx].pages track by $index"
+										class="{{ forgetUI.tables[idx].currentPage === page ? 'active' : '' }}"
+										ng-show="forgetUI.tables[idx].showPagination(page)">
+										<a ng-click="forgetUI.tables[idx].toPage(page)">{{ page + 1 }}</a>
 									</li>
-									<li class="{{ forgetUI.table.currentPage < forgetUI.table.pages.length ? '' : 'disabled'}}">
-										<a ng-click="forgetUI.table.next()" aria-label="Next">
+									<li class="{{ forgetUI.tables[idx].currentPage < forgetUI.tables[idx].pages.length ? '' : 'disabled'}}">
+										<a ng-click="forgetUI.tables[idx].next()" aria-label="Next">
 											<span aria-hidden="true">&raquo;</span>
 										</a>
 									</li>
@@ -304,8 +304,8 @@
 								</thead>
 								<tbody>
 									<tr
-										ng-repeat="(idx, observation) in result.observations | orderBy:ui.table.orderBy:ui.table.rev"
-										ng-show="forgetUI.table.isPage(idx)"
+										ng-repeat="(oidx, observation) in result.observations | orderBy:ui.table.orderBy:ui.table.rev"
+										ng-show="forgetUI.tables[idx].isPage(oidx)"
 										ng-click="ui.details.show(observation)"
 										class="clickable {{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
 										<td>{{ observation.analyzer }}</td>
