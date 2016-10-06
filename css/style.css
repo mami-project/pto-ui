@@ -183,6 +183,11 @@ th.clickable {
 	color: #d9230f;
 }
 
+a.clickable {
+	cursor: pointer;
+	color: #d9230f;
+}
+
 tr.clickable {
 	cursor: pointer;
 }

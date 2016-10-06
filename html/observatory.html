@@ -4,17 +4,20 @@
 		<button class="btn btn-default btn-xs" ng-click="ui.queries = []">clear</button>
 		<ol>
 			<li ng-repeat="query in ui.queries track by $index">
-				<small ng-mouseover="query.show = true" ng-mouseleave="query.show = false">
-					<a href="{{ query.link }}">{{ query.time }}</a>
-					<dl class="dl-horizontal" ng-show="query.show">
-						<dt>Startpoint:</dt><dd>{{ query.data.sip }}</dd>
-						<dt>On path:</dt><dd>{{ query.data.on_path }}</dd>
-						<dt>Endpoint:</dt><dd>{{ query.data.dip }}</dd>
-						<dt>From:</dt><dd>{{ query.data.from }}</dd>
-						<dt>To:</dt><dd>{{ query.data.to }}</dd>
-						<dt>Conditions:</dt><dd>{{ ui.conditions.display(query.data) }}</dd>
-						<dt>Grouping:</dt><dd>{{ ui.grouping.display(query.data) }}</dd>
-					</dl>
+				<small>
+					<a class="clickable" ng-click="query.show = !query.show">{{ query.time }}</a>
+					<div ng-show="query.show">
+						<dl class="dl-horizontal">
+							<dt>Startpoint:</dt><dd>{{ query.data.sip }}</dd>
+							<dt>On path:</dt><dd>{{ query.data.on_path }}</dd>
+							<dt>Endpoint:</dt><dd>{{ query.data.dip }}</dd>
+							<dt>From:</dt><dd>{{ query.data.from }}</dd>
+							<dt>To:</dt><dd>{{ query.data.to }}</dd>
+							<dt>Conditions:</dt><dd>{{ ui.conditions.display(query.data) }}</dd>
+							<dt>Grouping:</dt><dd>{{ ui.grouping.display(query.data) }}</dd>
+						</dl>
+						<a href="{{ query.link }}"><strong>link</strong></a>
+					</div>
 				</small>
 			</li>
 		</ol>

@@ -16,10 +16,13 @@ angular.module("ptoApp")
 		$scope.getTimeWindow = getTimeWindow;
 
 		var init = function() {
+			console.log("init started");
 			$scope.fetchAllConditions();
 
 			// user storage init
+			console.log("loading user storage");
 			var userUI = userStorage.load("ui");
+			console.log("applying user storage");
 			if (userUI) {
 				_.each(userUI, function(v, k) {
 					if (!_.isUndefined($scope.ui[k])) {
@@ -36,6 +39,7 @@ angular.module("ptoApp")
 			}, true);
 
 			// url parameter init
+			console.log("applying query params");
 			var params = $location.search();
 			_.extend($scope.input.query, paramsToQuery($scope.input.query, params));
 			console.log("input", $scope.input);
