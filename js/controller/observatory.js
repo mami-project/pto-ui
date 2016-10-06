@@ -352,7 +352,7 @@ angular.module("ptoApp")
 				$scope.colorMap = getColorMap($scope.api.results);
 				$scope.ui.loading = false;
 				var date = new Date();
-				$scope.ui.queries.push({
+				$scope.ui.queries.unshift({
 					link: "#/observatory?" + queryString,
 					time: date.toLocaleString(),
 					data: _.clone(queryObj),
