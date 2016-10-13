@@ -123,6 +123,9 @@ angular.module("ptoApp.piechart", [])
 								.attr('color', 'black')
 								.attr("text-anchor", "middle")
 								.text(function(d) {
+									if (d.data.percentage < 1) {
+										return "< 1%"
+									}
 									return d.data.percentage + "%";
 								})
 								.each(function (d, idx) {
