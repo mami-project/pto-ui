@@ -139,7 +139,7 @@
 						<div class="form-group">
 							<label>Name</label>
 							<select class="form-control" ng-model="condition.name">
-								<option ng-repeat="cname in api.allConditions" value="{{ cname }}">{{ cname }}</option>
+								<option ng-repeat="cname in api.allConditions" value="{{ cname }}">{{ main.displayCondition(cname) }}</option>
 							</select>
 							<small class="text-muted">Select a condition.</small>
 						</div>
@@ -311,7 +311,7 @@
 										<td>{{ observation.analyzer }}</td>
 										<td>{{ sourceIP(observation) }}</td>
 										<td>{{ destinationIP(observation) }}</td>
-										<td>{{ observation.conditions.join(', ') }}</td>
+										<td>{{ main.displayConditions(observation.conditions).join(', ') }}</td>
 									</tr>
 								</tbody>
 							</table>

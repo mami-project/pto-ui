@@ -12,6 +12,32 @@ angular.module("ptoApp")
 			return getProperty(obj[arr[0]], arr.slice(1, arr.length));
 		};
 
+		// this is copy pasted in pie-chart.js
+
+		var conditionsDecorations = {
+			"ecn.negotiated": "ecn.negotiation_attempt.succeeded",
+			"ecn.not_negotiated": "ecn.negotiation_attempt.failed",
+		};
+
+		$scope.main.displayCondition = function(cond) {
+			if (_.has(conditionsDecorations, cond)) {
+				return conditionsDecorations[cond];
+			}
+			return cond;
+		};
+
+		$scope.main.displayConditions = function(conditions) {
+			return _.map(conditions, function(cond) {
+				return $scope.main.displayCondition(cond);
+			});
+		};
+
+		$scope.main.displayConditionsCollection = function(conditions) {
+			return _.map(conditions, function(cond) {
+				return _.extend({}, cond, {name: $scope.main.displayCondition(cond.name)});
+			});
+		};
+
 		// from timeline.js TODO...
 		$scope.getTimeWindow = getTimeWindow;
 
@@ -76,7 +102,7 @@ angular.module("ptoApp")
 			conditions: {
 				show: false,
 				display: function(query) {
-					return getConditionsString(query.conditions)
+					return getConditionsString($scope.main.displayConditionsCollection(query.conditions))
 						.replace(/:/g, " AND ")
 						.replace(/,/g, " OR ") ||
 						"( empty )";

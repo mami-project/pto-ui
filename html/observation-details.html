@@ -19,7 +19,7 @@
 		<dt>Action IDs<dt>
 		<dd>{{ aidsToString(data.action_ids) }}</dd>
 		<dt>Conditions<dt>
-		<dd>{{ data.conditions.join(", ") }}</dd>
+		<dd>{{ main.displayConditions(data.conditions).join(", ") }}</dd>
 		<dt>Path<dt>
 		<dd>{{ data.path.join(", ") }}</dd>
 	</dl>

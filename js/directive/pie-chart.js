@@ -5,6 +5,18 @@ angular.module("ptoApp.piechart", [])
 			scope: { renderData: '=renderdata', colorMap: '=colormap' },
 			link: function(scope, element, attrs) {
 
+				var conditionsDecorations = {
+					"ecn.negotiated": "ecn.negotiation_attempt.succeeded",
+					"ecn.not_negotiated": "ecn.negotiation_attempt.failed",
+				};
+
+				scope.displayCondition = function(cond) {
+					if (_.has(conditionsDecorations, cond)) {
+						return conditionsDecorations[cond];
+					}
+					return cond;
+				};
+
 				var getPieData = function(observations) {
 					var conds = _.flatten(_.pluck(observations, "conditions"));
 					var initial = _.map(_.uniq(conds), function(cond) {

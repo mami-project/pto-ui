@@ -4,7 +4,7 @@
 		<div ng-repeat="slice in slices" class="checkbox">
 			<label ng-style="slice.style">
 				<input type="checkbox" ng-model="slice.selected" ng-disabled="slice.disabled"></input>
-				{{ slice.name }}
+				{{ displayCondition(slice.name) }}
 				<span class="number"> {{ slice.count }}</span>
 			</label>
 		</div>
