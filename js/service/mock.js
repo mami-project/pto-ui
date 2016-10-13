@@ -58,6 +58,25 @@ angular.module("ptoApp.mock", [])
 			}
 		};
 
+		var rndConditions = function() {
+			return function() {
+				switch(Math.round(Math.random() * 5)) {
+					case 0:
+					return ['ecn.connectivity.works', 'ecn.negotiated'];
+					case 1:
+					return ['ecn.connectivity.works', 'ecn.not_negotiated'];
+					case 2:
+					return ['ecn.connectivity.transient', 'ecn.negotiated'];
+					case 3:
+					return ['ecn.connectivity.transient', 'ecn.not_negotiated'];
+					case 4:
+					return ['ecn.connectivity.broken'];
+					case 5:
+					return ['ecn.connectivity.offline'];
+				}
+			}
+		};
+
 		var mock_template_gen = function(nPath, nObs) {
 			return {
 			"results": genN(nPath,
@@ -70,10 +89,7 @@ angular.module("ptoApp.mock", [])
 					"observations": genN(nObs,
 					{
 						"value": {},
-						"conditions": [
-						rndVal(["ecn.connectivity.works","ecn.connectivity.broken"]),
-						'ecn.negotiated'
-						],
+						"conditions": rndConditions(),
 						"analyzer": "MOCK",
 						"time": function() {
 						var dateFrom = rndInt(145160640000, 148322880000)();

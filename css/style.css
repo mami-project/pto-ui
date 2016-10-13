@@ -60,6 +60,7 @@ pie-chart {
 }
 
 .piechart-checkbox-group {
+	padding-top: 20px;
 	min-width: 210px;
 }
 
@@ -73,8 +74,7 @@ pie-chart {
 }
 
 .svg-container {
-	padding-left: 20px;
-	padding-right: 20px;
+
 }
 
 .pie-chart-container {
@@ -203,4 +203,8 @@ tr.clickable:hover {
 
 nav li a {
 	cursor: pointer;
+}
+
+.pie-chart-container.well {
+	padding: 0;
 }

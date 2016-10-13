@@ -4,10 +4,10 @@
 		{{ renderOnce(piechart, idx) }}
 		<div class="dont-expand piechart-checkbox-group">
 			<div ng-repeat="slice in piechart.slices" class="checkbox">
-				<label ng-style="slice.style">
+				<span ng-style="slice.style">
 					{{ slice.name }}
 					<span class="number"> {{ slice.count }}</span>
-				</label>
+				</span>
 			</div>
 		</div>
 		<div class="clearfix"></div>

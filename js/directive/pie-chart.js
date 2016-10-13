@@ -57,13 +57,13 @@ angular.module("ptoApp.piechart", [])
 						}, 0);
 						console.log("total "+k, total);
 						return _.map(coll, function(cond) {
-							return _.extend(cond, {percentage: (Math.round((cond.count / total) * 100))+" %" })
+							return _.extend(cond, {percentage: Math.round((cond.count / total) * 100) })
 						});;
 					})
 				};
 
 				var getPieVisualizer = function(selector, options) {
-					var defaults = { width: 140, height: 140, radius: 70 };
+					var defaults = { width: 200, height: 200, radius: 70 };
 					var settings = _.extend(defaults, options || {});
 
 					var svgContainer = selector.querySelector('.svg-container');
@@ -123,17 +123,18 @@ angular.module("ptoApp.piechart", [])
 								.attr('color', 'black')
 								.attr("text-anchor", "middle")
 								.text(function(d) {
-									return d.data.percentage;
+									return d.data.percentage + "%";
 								})
 								.each(function (d) {
 									var bb = this.getBBox(),
 									center = arc.centroid(d);
+									console.log("width", bb.width);
 									var topLeft = {
 										x: center[0] + bb.x,
 										y: center[1] + bb.y
 									};
 									var topRight = {
-										x: topLeft.x + bb.width,
+										x: topLeft.x + bb.width - 20,
 										y: topLeft.y
 									};
 									var bottomLeft = {
@@ -141,7 +142,7 @@ angular.module("ptoApp.piechart", [])
 										y: topLeft.y + bb.height
 									};
 									var bottomRight = {
-										x: topLeft.x + bb.width,
+										x: topLeft.x + bb.width  - 20,
 										y: topLeft.y + bb.height
 									};
 
@@ -151,12 +152,21 @@ angular.module("ptoApp.piechart", [])
 										pointIsInArc(bottomRight, d, arc);
 
 								})
-								.style("display", function(d) {
-									if (d.inside) {
-										return null;
+								.attr("transform", function(d) {
+									if (pieData.length <= 1) {
+										return ""
 									}
-									return "none";
-								});
+									if (d.inside) {
+										return "translate(" + arc.centroid(d) + ")";;
+									}
+									return "translate(" + arc.centroid(d) + ") rotate(" + getAngle(d) + ")";
+								})
+								.attr("dx", function(d) {
+									if (!d.inside) {
+										return 50;
+									}
+									return 0;
+								})
 								// .attr("transform", function(d) {
 								// 	if (!d.inside) {
 								// 		return "translate(" + arc.centroid(d) + ") " +
