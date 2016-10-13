@@ -60,7 +60,7 @@ angular.module("ptoApp.mock", [])
 
 		var rndConditions = function() {
 			return function() {
-				switch(Math.round(Math.random() * 5)) {
+				switch(Math.round(Math.random() * 9)) {
 					case 0:
 					return ['ecn.connectivity.works', 'ecn.negotiated'];
 					case 1:
@@ -73,6 +73,14 @@ angular.module("ptoApp.mock", [])
 					return ['ecn.connectivity.broken'];
 					case 5:
 					return ['ecn.connectivity.offline'];
+					case 6:
+					return ['ecn.connectivity.worried'];
+					case 7:
+					return ['ecn.connectivity.desperate'];
+					case 8:
+					return ['ecn.connectivity.fearful'];
+					case 9:
+					return ['ecn.connectivity.idiotic'];
 				}
 			}
 		};

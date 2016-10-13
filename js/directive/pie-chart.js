@@ -111,7 +111,7 @@ angular.module("ptoApp.piechart", [])
 									d.data.style = { color: color };
 									return color;
 								});
-							slice.append('svg:text')
+							var texts = slice.append('svg:text')
 								.attr('transform', function(d) {
 									d.innerRadius = 0;
 									d.outerRadius = settings.radius;
@@ -125,7 +125,7 @@ angular.module("ptoApp.piechart", [])
 								.text(function(d) {
 									return d.data.percentage + "%";
 								})
-								.each(function (d) {
+								.each(function (d, idx) {
 									var bb = this.getBBox(),
 									center = arc.centroid(d);
 									console.log("width", bb.width);
@@ -134,7 +134,7 @@ angular.module("ptoApp.piechart", [])
 										y: center[1] + bb.y
 									};
 									var topRight = {
-										x: topLeft.x + bb.width - 20,
+										x: topLeft.x + bb.width,
 										y: topLeft.y
 									};
 									var bottomLeft = {
@@ -142,7 +142,7 @@ angular.module("ptoApp.piechart", [])
 										y: topLeft.y + bb.height
 									};
 									var bottomRight = {
-										x: topLeft.x + bb.width  - 20,
+										x: topLeft.x + bb.width,
 										y: topLeft.y + bb.height
 									};
 
@@ -150,7 +150,6 @@ angular.module("ptoApp.piechart", [])
 										pointIsInArc(topRight, d, arc) &&
 										pointIsInArc(bottomLeft, d, arc) &&
 										pointIsInArc(bottomRight, d, arc);
-
 								})
 								.attr("transform", function(d) {
 									if (pieData.length <= 1) {
@@ -161,25 +160,30 @@ angular.module("ptoApp.piechart", [])
 									}
 									return "translate(" + arc.centroid(d) + ") rotate(" + getAngle(d) + ")";
 								})
-								.attr("dx", function(d) {
+								.attr("dx", function(d, idx) {
 									if (!d.inside) {
 										return 50;
 									}
 									return 0;
-								})
-								// .attr("transform", function(d) {
-								// 	if (!d.inside) {
-								// 		return "translate(" + arc.centroid(d) + ") " +
-								// 		"rotate(" + getAngle(d) + ")";
-								// 	}
-								// 	return "translate(" + arc.centroid(d) + ")";
-								// })
-								// .attr("dx", function(d) {
-								// 	if (!d.inside) {
-								// 		return 20;
-								// 	}
-								// })
+								});
 
+							var prev;
+							texts.each(function(d, idx) {
+								console.log("D", d);
+								if (prev && !d.inside && !prev.inside) {
+									if (prev && d.data.percentage < 1 && d.data.percentage < 1) {
+										prev.collides = true;
+									}
+								}
+								prev = d;
+							})				
+							.style("display", function(d, idx) {
+								console.log("check display", d)
+								if (d.collides) {
+									return "none";
+								}
+								return null;
+							})
 					};
 				};
 
