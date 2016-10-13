@@ -260,6 +260,14 @@ angular.module("ptoApp")
 			}).join('&');
 		};
 
+		$scope.sourceIP = function(observation) {
+			return observation.path[0];
+		};
+
+		$scope.destinationIP = function(observation) {
+			return observation.path[observation.path.length - 1];
+		};
+
 		// TODO decouple sideeffects from timeline
 		// TODO decouple timeline into separate controller or put it into UI
 
