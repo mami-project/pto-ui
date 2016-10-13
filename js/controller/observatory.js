@@ -219,6 +219,9 @@ angular.module("ptoApp")
 
 
 		$scope.forgetUI = {
+			pagination: {
+				active: true,
+			},
 			tables: [],
 		};
 
@@ -319,6 +322,9 @@ angular.module("ptoApp")
 			} else {
 				rejectToggle = !rejectToggle;
 			}
+
+			$scope.forgetUI.pagination.active = !rejectToggle;
+
 			//console.log('new toggle', rejectToggle);
 			_.each($scope.api.results, function(group) {
 				_.each(group.observations, function(obs) {

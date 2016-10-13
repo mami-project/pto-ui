@@ -271,7 +271,7 @@
 							</timeline>
 						</div>
 						<div ng-if="ui.render.table">
-							<nav aria-label="Page navigation">
+							<nav aria-label="Page navigation" ng-show="forgetUI.pagination.active">
 								<ul class="pagination">
 									<li class="{{ forgetUI.tables[idx].currentPage > 0 ? '' : 'disabled' }}">
 										<a ng-click="forgetUI.tables[idx].previous()" aria-label="Previous">
@@ -303,7 +303,7 @@
 								<tbody>
 									<tr
 										ng-repeat="(oidx, observation) in result.observations | orderBy:ui.table.orderBy:ui.table.rev"
-										ng-show="forgetUI.tables[idx].isPage(oidx)"
+										ng-show="forgetUI.tables[idx].isPage(oidx) || !forgetUI.pagination.active"
 										ng-click="ui.details.show(observation)"
 										class="clickable {{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
 										<td>{{ observation.analyzer }}</td>
