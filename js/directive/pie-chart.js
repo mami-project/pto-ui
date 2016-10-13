@@ -5,38 +5,69 @@ angular.module("ptoApp.piechart", [])
 			scope: { renderData: '=renderdata', colorMap: '=colormap' },
 			link: function(scope, element, attrs) {
 
+				// copy pasted from observatory.js
 				var conditionsDecorations = {
 					"ecn.negotiated": "ecn.negotiation_attempt.succeeded",
 					"ecn.not_negotiated": "ecn.negotiation_attempt.failed",
 				};
-
-				scope.displayCondition = function(cond) {
+				var displayCondition = function(cond) {
 					if (_.has(conditionsDecorations, cond)) {
 						return conditionsDecorations[cond];
 					}
 					return cond;
 				};
+				var invertDisplayCondition = function(cond) {
+					var invMap = _.invert(conditionsDecorations);
+					if (_.has(invMap, cond)) {
+						return invMap[cond];
+					}
+					return cond;
+				};
+
+				var pointIsInArc = function(pt, ptData, d3Arc) {
+					var r1 = d3Arc.innerRadius()(ptData),
+					r2 = d3Arc.outerRadius()(ptData),
+					theta1 = d3Arc.startAngle()(ptData),
+					theta2 = d3Arc.endAngle()(ptData);
+					var dist = pt.x * pt.x + pt.y * pt.y,
+					angle = Math.atan2(pt.x, -pt.y);
+					angle = (angle < 0) ? (angle + Math.PI * 2) : angle;
+					return (r1 * r1 <= dist) && (dist <= r2 * r2) && 
+						(theta1 <= angle) && (angle <= theta2);
+				};
+
+				var getAngle = function (d) {
+					return (180 / Math.PI * (d.startAngle + d.endAngle) / 2 - 90);
+				};
 
 				var getPieData = function(observations) {
 					var conds = _.flatten(_.pluck(observations, "conditions"));
-					var initial = _.map(_.uniq(conds), function(cond) {
-						return { name: cond, count: 0 };
+					var counted = _.countBy(conds, function(cond) {
+						return cond;
+					})
+					var coll = _.map(counted, function(count, name) {
+						return {count: count, name: displayCondition(name)};
 					});
-					return _.reduce(conds, function(pieData, cond) {
-						_.each(pieData, function(pd) {
-							if (pd.name === cond) {
-								pd.count++;
-							}
-						});
-						return pieData;
-					}, initial);
+					var grouped = _.groupBy(coll, function(cond) {
+						return cond.name.split(".").slice(0, 2).join(".");
+					});
+					return _.mapObject(grouped, function(coll, k) {
+						var total = _.reduce(coll, function(total, cond) {
+							return total + cond.count;
+						}, 0);
+						console.log("total "+k, total);
+						return _.map(coll, function(cond) {
+							return _.extend(cond, {percentage: (Math.round((cond.count / total) * 100))+" %" })
+						});;
+					})
 				};
 
 				var getPieVisualizer = function(selector, options) {
 					var defaults = { width: 140, height: 140, radius: 70 };
 					var settings = _.extend(defaults, options || {});
 
-					var svgContainer = selector[0].querySelector('.svg-container');
+					var svgContainer = selector.querySelector('.svg-container');
+
 					// console.log("pie selector", selector);
 					// console.log("pie selected", svgContainer);
 
@@ -56,7 +87,7 @@ angular.module("ptoApp.piechart", [])
 
 					// filtered pieData
 					return function(pieData) {
-						//console.log("visualize pie", pieData);
+						console.log("visualize pie", pieData);
 						$svg.selectAll('*').remove();
 						$svg.append('circle')
 							.attr('cx', function(d) { return 0; })
@@ -73,67 +104,102 @@ angular.module("ptoApp.piechart", [])
 									var color;
 									if (!_.isUndefined(settings.colorMap)) {
 										//console.log(settings.colorMap);
-										color = _.findWhere(settings.colorMap, { name: d.data.name }).color;
+										color = _.findWhere(settings.colorMap, { name: invertDisplayCondition(d.data.name) }).color;
 									} else {
 										color = colors(i);
 									}
 									d.data.style = { color: color };
 									return color;
 								});
-							// slice.append('svg:text')
-							// 	.attr('color', 'black')
-							// 	.text('asdf');
+							slice.append('svg:text')
+								.attr('transform', function(d) {
+									d.innerRadius = 0;
+									d.outerRadius = settings.radius;
+									return "translate(" + arc.centroid(d) + ")";
+								})
+								.attr('color', 'black')
+								.attr("text-anchor", "middle")
+								.text(function(d) {
+									return d.data.percentage;
+								})
+								.each(function (d) {
+									var bb = this.getBBox(),
+									center = arc.centroid(d);
+									var topLeft = {
+										x: center[0] + bb.x,
+										y: center[1] + bb.y
+									};
+									var topRight = {
+										x: topLeft.x + bb.width,
+										y: topLeft.y
+									};
+									var bottomLeft = {
+										x: topLeft.x,
+										y: topLeft.y + bb.height
+									};
+									var bottomRight = {
+										x: topLeft.x + bb.width,
+										y: topLeft.y + bb.height
+									};
+
+									d.inside = pointIsInArc(topLeft, d, arc) &&
+										pointIsInArc(topRight, d, arc) &&
+										pointIsInArc(bottomLeft, d, arc) &&
+										pointIsInArc(bottomRight, d, arc);
+
+								})
+								.style("display", function(d) {
+									if (d.inside) {
+										return null;
+									}
+									return "none";
+								});
+								// .attr("transform", function(d) {
+								// 	if (!d.inside) {
+								// 		return "translate(" + arc.centroid(d) + ") " +
+								// 		"rotate(" + getAngle(d) + ")";
+								// 	}
+								// 	return "translate(" + arc.centroid(d) + ")";
+								// })
+								// .attr("dx", function(d) {
+								// 	if (!d.inside) {
+								// 		return 20;
+								// 	}
+								// })
+
 					};
 				};
 
-				$timeout(function() {
-						//console.log('piechart directive', element, attrs);
-					var pieData = getPieData(scope.renderData.observations);
-					var visualizePiechart = getPieVisualizer(element, { colorMap: scope.colorMap });
+				scope.piecharts = [];
+					//console.log('piechart directive', element, attrs);
+				var pieData = getPieData(scope.renderData.observations);
 
-					scope.slices = _.map(pieData, function(obs, i) {
-						var exclude = _.reduce(scope.renderData.observations, function(exclude, pgobs) {
-							//console.log("test exclude", exclude, pgobs.conditions, obs.name);
-							if (_.contains(pgobs.conditions, obs.name)) {
-								return _.union(exclude, _.without(pgobs.conditions, obs.name));
-							}
-							return exclude;
-						}, []);
-						//console.log("slice color map", scope.colorMap);
+				console.log("piedata", pieData);
+
+				_.each(pieData, function(pie, idx) {
+					var piechart = {};
+					scope.piecharts.push(piechart);
+					
+					piechart.slices = _.map(pie, function(obs, i) {
+						console.log("slice color map", scope.colorMap);
+						console.log("obs", obs);
 						return _.extend({
-							selected: false,
-							disabled: false,
-							exclude: exclude,
-							style: { color: _.findWhere(scope.colorMap, { name: obs.name }).color }
+							style: { color: _.findWhere(scope.colorMap, { name: invertDisplayCondition(obs.name) }).color }
 						}, obs);
 					});
-
 					//console.log("slices", scope.slices);
+					
+				});
 
-					var updateSelections = function(slices) {
-						_.each(slices, function(slice) {
-							slice.disabled = false;
-							//slice.style.color = 'black';
-						});
-
-						_.each(slices, function(slice) {
-							if (slice.selected) {
-								_.each(slices, function(sl) {
-									if (_.contains(slice.exclude, sl.name)) {
-										sl.disabled = true;
-									}
-								})
-							}
-						});
-					};
-
-					scope.$watch('slices', function(newValue, oldValue) {
-						updateSelections(newValue);
-						visualizePiechart(_.filter(newValue, function(obs) {
-							return obs.selected;
-						}));
-					}, true);
-				}, 0);
+				var rendered = [];
+				scope.renderOnce = function(piechart, idx) {
+					if (_.contains(rendered, idx)) {
+						return;
+					}
+					rendered.push(idx);
+					var visualizePiechart = getPieVisualizer(element[0].querySelector('#piechart-'+idx), { colorMap: scope.colorMap });
+					visualizePiechart(piechart.slices);
+				};
 			},
 			templateUrl: 'html/piechart-directive.html'
 		};

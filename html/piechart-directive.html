@@ -1,13 +1,15 @@
 <div class="piechart-container">
-	<div class="dont-expand svg-container"></div>
-	<div class="dont-expand piechart-checkbox-group">
-		<div ng-repeat="slice in slices" class="checkbox">
-			<label ng-style="slice.style">
-				<input type="checkbox" ng-model="slice.selected" ng-disabled="slice.disabled"></input>
-				{{ displayCondition(slice.name) }}
-				<span class="number"> {{ slice.count }}</span>
-			</label>
+	<div ng-repeat="(idx, piechart) in piecharts" id="piechart-{{ idx }}">
+		<div class="dont-expand svg-container"></div>
+		{{ renderOnce(piechart, idx) }}
+		<div class="dont-expand piechart-checkbox-group">
+			<div ng-repeat="slice in piechart.slices" class="checkbox">
+				<label ng-style="slice.style">
+					{{ slice.name }}
+					<span class="number"> {{ slice.count }}</span>
+				</label>
+			</div>
 		</div>
+		<div class="clearfix"></div>
 	</div>
-	<div class="clearfix"></div>
 </div>
