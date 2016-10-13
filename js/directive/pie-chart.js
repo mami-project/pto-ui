@@ -115,7 +115,10 @@ angular.module("ptoApp.piechart", [])
 								.attr('transform', function(d) {
 									d.innerRadius = 0;
 									d.outerRadius = settings.radius;
-									return "translate(" + arc.centroid(d) + ")";
+									if (pieData.length > 1) {
+										return "translate(" + arc.centroid(d) + ")";
+									}
+									return "";
 								})
 								.attr('color', 'black')
 								.attr("text-anchor", "middle")
