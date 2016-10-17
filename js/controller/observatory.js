@@ -368,7 +368,7 @@ angular.module("ptoApp")
 				queryObj.limit = 16;
 			}
 
-			if (queryObj.limit == 0) {
+			if (queryObj.limit == 0 || queryObj.type == "default") {
 				delete queryObj.limit;
 				delete queryObj.skip;
 			}
