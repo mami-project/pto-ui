@@ -298,18 +298,19 @@
 										<th>Path IP Src</th>
 										<th>Path IP Dst</th>
 										<th>Conditions</th>
+										<th>Details</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr
 										ng-repeat="(oidx, observation) in result.observations | orderBy:ui.table.orderBy:ui.table.rev"
 										ng-show="forgetUI.tables[idx].isPage(oidx) || !forgetUI.pagination.active"
-										ng-click="ui.details.show(observation)"
-										class="clickable {{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
+										class="obs-row {{ observation.highlighted ? 'success' : '' }}{{ observation.rejected ? ' rejected' : '' }}">
 										<td>{{ observation.analyzer }}</td>
 										<td>{{ sourceIP(observation) }}</td>
 										<td>{{ destinationIP(observation) }}</td>
 										<td>{{ main.displayConditions(observation.conditions).join(', ') }}</td>
+										<td><a class="clickable" ng-click="ui.details.show(observation)">Show</a></td>
 									</tr>
 								</tbody>
 							</table>

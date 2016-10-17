@@ -192,7 +192,7 @@ tr.clickable {
 	cursor: pointer;
 }
 
-tr.clickable:hover {
+.obs-row:hover {
 	color: #d9230f;
 }
 

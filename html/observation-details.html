@@ -3,7 +3,7 @@
 </div>
 <div class="modal-body">
 	<h4>JSON Raw</h4>
-	<pre>{{data}}</pre>
+	<pre>{{asJSON(data)}}</pre>
 	<h4>Properties</h4>
 	<dl class="dl dl-horizontal">
 		<dt>Time From<dt>
@@ -15,7 +15,7 @@
 		<dt>Value<dt>
 		<dd>{{ valueToString(data.value) }}</dd>
 		<dt>Sources<dt>
-		<dd>{{ sourcesToString(data.sources) }}</dd>
+		<dd><code>{{asJSON(data.sources)}}</code></dd>
 		<dt>Action IDs<dt>
 		<dd>{{ aidsToString(data.action_ids) }}</dd>
 		<dt>Conditions<dt>

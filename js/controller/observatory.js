@@ -464,6 +464,9 @@ angular.module("ptoApp")
 				},
 			}
 		};
+		$scope.asJSON = function(data) {
+			return JSON.stringify(data);
+		};
 		$scope.aidsToString = function(aids) {
 			return _.map(aids, function(aid) {
 				return aid.id + ":" + aid.valid;

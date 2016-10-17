@@ -109,15 +109,15 @@ angular.module("ptoApp.mock", [])
 
 		var mockFromTemplate = function(tpl) {
 			if (_.isFunction(tpl)) {
-			return tpl();
+				return tpl();
 			}
 
 			if (_.isArray(tpl)) {
-			return _.map(tpl, mockFromTemplate);
+				return _.map(tpl, mockFromTemplate);
 			}
 
 			if (_.isObject(tpl)) {
-			return _.mapObject(tpl, mockFromTemplate);
+				return _.mapObject(tpl, mockFromTemplate);
 			}
 
 			return tpl;
