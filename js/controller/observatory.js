@@ -364,6 +364,10 @@ angular.module("ptoApp")
 			$scope.isError = false;
 			$scope.errorResponse = {};
 
+			if (queryObj.limit == 0 && queryObj.type == "grouped") {
+				queryObj.limit = 16;
+			}
+
 			if (queryObj.limit == 0) {
 				delete queryObj.limit;
 				delete queryObj.skip;
