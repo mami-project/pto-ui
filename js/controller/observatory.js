@@ -38,6 +38,53 @@ angular.module("ptoApp")
 			});
 		};
 
+		$scope.main.displayConditionsString = function(condstring) {
+			return _.reduce(conditionsDecorations, function(str, replStr, matchStr) {
+				return str.replace(matchStr, replStr);
+			}, condstring)
+		};
+
+		var getConditionMatch = function(cname) {
+			return $scope.main.displayCondition(cname).match(/^([a-zA-Z0-9_]*\.)([a-zA-Z0-9_]*\.)[a-zA-Z0-9_]*$/);
+		};
+
+		var sortORConditions = function(condstring) {
+			return condstring.split(",").sort().join(",");
+		};
+
+		var getWildCardConditions = function(conditionNames) {
+			return _.reduce(conditionNames, function(wcs, cname) {
+				var match = getConditionMatch(cname);
+				if (match && match.length === 3) {
+					var str = match[1] + match[2] + "*";
+					var wc = _.find(wcs, function(wc) { return wc.display === str;})
+					if (wc) {
+						wc.count++;
+						wc.value = sortORConditions(wc.value + "," + cname);
+						return wcs;
+					}
+					return wcs.concat({display: str, count: 1, value: cname});
+				}
+				return wcs;
+			}, []);
+		};
+
+		var groupCondToWildcards = function(conditions) {
+			return _.reduce(conditions, function(grouped, cond) {
+				var match = getConditionMatch(cond.name);
+				if (match && match.length === 3) {
+					var group = _.find(grouped, function(gcond) {
+						return gcond.display.match(match[1] + match[2]);
+					});
+					if (group) {
+						group.name = sortORConditions(group.name + "," + cond.name);
+						return grouped;
+					}
+				}
+				return grouped.concat(_.extend({}, cond, {display: $scope.main.displayCondition(cond.name)}));
+			}, []);
+		};
+
 		// from timeline.js TODO...
 		$scope.getTimeWindow = getTimeWindow;
 
@@ -102,7 +149,7 @@ angular.module("ptoApp")
 			conditions: {
 				show: false,
 				display: function(query) {
-					return getConditionsString($scope.main.displayConditionsCollection(query.conditions))
+					return $scope.main.displayConditionsString(getConditionsString(query.conditions))
 						.replace(/:/g, " AND ")
 						.replace(/,/g, " OR ") ||
 						"( empty )";
@@ -266,7 +313,8 @@ angular.module("ptoApp")
 						result: iter.result
 					};
 				}, { lastWord: "", result: [ {name: ""} ], idx: 0 });
-				query.conditions = reduction.result;
+				query.conditions = groupCondToWildcards(reduction.result);
+				console.log("paramsToQuery conditions", query.conditions);
 			}
 			query.from = parseInt(query.from);
 			query.to = parseInt(query.to);
@@ -350,7 +398,14 @@ angular.module("ptoApp")
 		$scope.fetchAllConditions = function() {
 			var success = function(res) {
 				console.log("all conditions", res.data);
-				$scope.api.allConditions = _.keys(res.data.conditions);
+				// extend with wildcard conditions
+				var conditionNames = _.keys(res.data.conditions);
+				var wildCardConditions = getWildCardConditions(conditionNames);
+				console.log("wc conditions", wildCardConditions);
+				var extendedConditions = _.map(conditionNames, function(cname) {
+					return {display: $scope.main.displayCondition(cname), value: cname};
+				}).concat(wildCardConditions);
+				$scope.api.allConditions = extendedConditions;
 			};
 
 			var error = function(err) {

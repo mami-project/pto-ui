@@ -137,7 +137,7 @@
 						<div class="form-group">
 							<label>Name</label>
 							<select class="form-control" ng-model="condition.name">
-								<option ng-repeat="cname in api.allConditions" value="{{ cname }}">{{ main.displayCondition(cname) }}</option>
+								<option ng-repeat="scond in api.allConditions" value="{{ scond.value }}">{{ scond.display }}</option>
 							</select>
 							<small class="text-muted">Select a condition.</small>
 						</div>
