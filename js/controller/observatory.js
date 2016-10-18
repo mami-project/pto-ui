@@ -81,7 +81,7 @@ angular.module("ptoApp")
 						return grouped;
 					}
 				}
-				return grouped.concat(_.extend({}, cond, {display: $scope.main.displayCondition(cond.name)}));
+				return grouped.concat(_.extend({}, cond, {display: $scope.main.displayCondition(cond.name)} ));
 			}, []);
 		};
 
@@ -313,7 +313,7 @@ angular.module("ptoApp")
 						result: iter.result
 					};
 				}, { lastWord: "", result: [ {name: ""} ], idx: 0 });
-				query.conditions = groupCondToWildcards(reduction.result);
+				query.conditions = reduction.result;
 				console.log("paramsToQuery conditions", query.conditions);
 			}
 			query.from = parseInt(query.from);
@@ -406,6 +406,21 @@ angular.module("ptoApp")
 					return {display: $scope.main.displayCondition(cname), value: cname};
 				}).concat(wildCardConditions);
 				$scope.api.allConditions = extendedConditions;
+
+				// $scope.input.query.conditions = _.reduce($scope.input.query.conditions, function(clean, cond) {
+				// 	if (cond.name.match(",")){
+				// 		var lookup = _.find(extendedConditions, function(extCond) {
+				// 			return extCond.value === cond.name;
+				// 		});
+				// 		if (lookup) {
+				// 			return clean.concat(cond);
+				// 		}
+				// 		var conds = _.map(cond.name.split(","), function(condname) {
+				// 			return {name: condname};
+				// 		});
+				// 	}
+				// 	return clean.concat(cond);
+				// }, []);
 			};
 
 			var error = function(err) {
