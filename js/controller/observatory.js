@@ -44,6 +44,21 @@ angular.module("ptoApp")
 			}, condstring)
 		};
 
+		var getConditionsString = function(conditions) {
+			return _.reduce(conditions, function(str, condition) {
+				return str + ((condition.op) ? condition.op : "") + condition.name;
+			}, "");
+		};
+
+		var getQueryString = function(object) {
+			return _.map(object, function(v, k) {
+				if (k === "conditions") {
+					return k + '=' + encodeURIComponent(getConditionsString(v));
+				}
+				return k + '=' + encodeURIComponent(v);
+			}).join('&');
+		};
+
 		var getConditionMatch = function(cname) {
 			return $scope.main.displayCondition(cname).match(/^([a-zA-Z0-9_]*\.)([a-zA-Z0-9_]*\.)[a-zA-Z0-9_]*$/);
 		};
@@ -70,6 +85,22 @@ angular.module("ptoApp")
 		};
 
 		var groupCondToWildcards = function(conditions) {
+			var condString = getConditionsString(conditions);
+			_.each($scope.api.allConditions, function(cond) {
+				if (cond.value.match(",")) {
+					condString = condString.split(cond.value).join(cond.display);
+				}
+			});
+			var conds = conditionStringToQuery(condString);
+			_.each(conds, function(cond) {
+				if (cond.name.match(/\*/)) {
+					cond.name = _.find($scope.api.allConditions, function(wc) {
+						return wc.display === cond.name;
+					}).value;
+
+				}
+			});
+			return conds;
 			return _.reduce(conditions, function(grouped, cond) {
 				var match = getConditionMatch(cond.name);
 				if (match && match.length === 3) {
@@ -295,46 +326,37 @@ angular.module("ptoApp")
 			count: 0,
 		};
 
+		var conditionStringToQuery = function(conditions) {
+			// var ANDgroups = conditions.split(";");
+			// var ORgroups = _.map(ANDgroups, function(ANDgroup) { return ANDgroup.split(",") });
+			// return null;
+			return _.reduce(conditions.split(""), function(iter, char) {
+				//console.log("params to query", iter, char);
+				if (char === ":" || char === ",") {
+					return {
+						idx: iter.idx + 1,
+						result: iter.result.concat({ name: "", op: char })
+					};
+				}
+				iter.result[iter.idx].name += char;
+				return {
+					idx: iter.idx,
+					result: iter.result
+				};
+			}, { lastWord: "", result: [ {name: ""} ], idx: 0 }).result;
+		};
+
 		var paramsToQuery = function(uiQuery, params) {
 			var query = _.extend({}, uiQuery, params);
 			//console.log("ui query", query);
 			if (_.isString(query.conditions)) {
-				var reduction = _.reduce(query.conditions.split(""), function(iter, char) {
-					//console.log("params to query", iter, char);
-					if (char === ":" || char === ",") {
-						return {
-							idx: iter.idx + 1,
-							result: iter.result.concat({ name: "", op: char })
-						};
-					}
-					iter.result[iter.idx].name += char;
-					return {
-						idx: iter.idx,
-						result: iter.result
-					};
-				}, { lastWord: "", result: [ {name: ""} ], idx: 0 });
-				query.conditions = reduction.result;
+				query.conditions = conditionStringToQuery(query.conditions);
 				console.log("paramsToQuery conditions", query.conditions);
 			}
 			query.from = parseInt(query.from);
 			query.to = parseInt(query.to);
 			//console.log("conditions", query.conditions);
 			return query;
-		};
-
-		var getConditionsString = function(conditions) {
-			return _.reduce(conditions, function(str, condition) {
-				return str + ((condition.op) ? condition.op : "") + condition.name;
-			}, "");
-		};
-
-		var getQueryString = function(object) {
-			return _.map(object, function(v, k) {
-				if (k === "conditions") {
-					return k + '=' + encodeURIComponent(getConditionsString(v));
-				}
-				return k + '=' + encodeURIComponent(v);
-			}).join('&');
 		};
 
 		$scope.sourceIP = function(observation) {
@@ -488,6 +510,7 @@ angular.module("ptoApp")
 				if ($scope.ui.mock.active) {
 					return;
 				}
+				$scope.input.query.conditions = groupCondToWildcards($scope.input.query.conditions);
 				$scope.ui.queries.unshift({
 					link: "#/observatory?" + queryString,
 					time: date.toLocaleString(),
