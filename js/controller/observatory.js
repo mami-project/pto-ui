@@ -1,6 +1,6 @@
 angular.module("ptoApp")
 
-	.controller("ObservatoryCtrl", function($scope, $http, $uibModal, cfpLoadingBar, $location, mock, userStorage, config) {
+	.controller("ObservatoryCtrl", function($scope, $q, $http, $uibModal, cfpLoadingBar, $location, mock, userStorage, config) {
 		$scope.main.setActiveMenu("advanced");
 		$scope.directLink = $location.absUrl();
 		//cfpLoadingBar.start();
@@ -359,7 +359,15 @@ angular.module("ptoApp")
 			$http.get(config.apibase + '/api/all_conditions').then(success, error);
 		};
 
+		
 		$scope.fetchResults = function(queryObj) {
+			// _.each($http.pendingRequests, function(req) {
+			// 	if (req.timeout && req.cancel) {
+			// 		console.log("canceling request", req);
+			// 		req.cancel.resolve();
+			// 	}
+			// });
+			// var canceler = $q.defer();
 			$scope.ui.loading = true;
 			$scope.isError = false;
 			$scope.errorResponse = {};
@@ -413,7 +421,7 @@ angular.module("ptoApp")
 				$scope.ui.queries.unshift({
 					link: "#/observatory?" + queryString,
 					time: date.toLocaleString(),
-					data: _.clone(queryObj),
+					data: JSON.parse(JSON.stringify(queryObj)),
 					display: $scope.ui.pathCriteria.display(queryObj) +"\n"+ $scope.ui.conditions.display(queryObj) +"\n"+ $scope.ui.grouping.display(queryObj)
 				});
 			};
@@ -436,6 +444,7 @@ angular.module("ptoApp")
 			console.log("starting fetch")
 			var endPoint = ($scope.input.query.type === 'default') ? '/api/raw/observations?' : '/api/observations?';
 			$http.get(config.apibase + endPoint + queryString).then(success, error);
+			//$http.get(config.apibase + endPoint + queryString, { timeout: canceler.promise, cancel: canceler }).then(success, error);
 		};
 
 		$scope.nextPage = function() {
