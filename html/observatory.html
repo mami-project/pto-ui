@@ -295,8 +295,8 @@
 								<thead>
 									<tr>
 										<th>Analyzer</th>
-										<th>Path IP Src</th>
-										<th>Path IP Dst</th>
+										<th class="clickable" ng-click="ui.table.sort('sip')">Path IP Src <span ng-show="ui.table.orderBy === 'sip'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
+										<th class="clickable" ng-click="ui.table.sort('dip')">Path IP Dst <span ng-show="ui.table.orderBy === 'dip'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
 										<th>Conditions</th>
 										<th>Details</th>
 									</tr>
