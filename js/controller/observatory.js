@@ -256,8 +256,8 @@ angular.module("ptoApp")
 				error: false,
 				nPathGroups: 0,
 				nObservations: 0,
-				generate: function() {
-					return mock(this.nPathGroups, this.nObservations);
+				generate: function(query) {
+					return mock(query, this.nPathGroups, this.nObservations);
 				}
 			},
 		};

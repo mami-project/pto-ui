@@ -77,7 +77,7 @@ angular.module("ptoApp.mock", [])
 			}
 		};
 
-		var mock_template_gen = function(nPath, nObs) {
+		var mock_template_gen = function(query, nPath, nObs) {
 			return {
 			"results": genN(nPath,
 				{
@@ -123,21 +123,29 @@ angular.module("ptoApp.mock", [])
 			return tpl;
 		};
 
-		var extendObservations = function(data) {
+		var extendObservations = function(query, data) {
 			return _.map(data.results, function(result) {
-			result.path = [result.sip, "*", result.dip];
-			result.observations = _.map(result.observations, function(obs) {
-				obs.path = result.path;
-				return obs;
-			});
-			return result;
+				if (query.type === 'default') {
+					result.sip = undefined;
+					result.dip = undefined;
+					result.observations = _.map(result.observations, function(obs) {
+						return _.extend(obs, {path: [ rndIP()(), "*", rndIP()() ] })
+					});
+					return result;
+				}
+				result.path = [result.sip, "*", result.dip];
+				result.observations = _.map(result.observations, function(obs) {
+					obs.path = result.path;
+					return obs;
+				});
+				return result;
 			});
 		};
 
-		return function(nPathGroups, nObservations) {
-			var tpl = mock_template_gen(nPathGroups, nObservations);
+		return function(query, nPathGroups, nObservations) {
+			var tpl = mock_template_gen(query, ((query.type === 'grouped') ? nPathGroups : 1), nObservations);
 			var data = mockFromTemplate(tpl);
-			data.results = extendObservations(data);
+			data.results = extendObservations(query, data);
 			return data;
 		};
 	});
