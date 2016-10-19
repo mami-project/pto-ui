@@ -8,8 +8,10 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Number of uploads</th>
+            <th class="clickable" ng-click="ui.table.sort('_id')">Name <span ng-show="ui.table.orderBy === '_id'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
+            <th class="clickable" ng-click="ui.table.sort('count')">Number of Uploads <span ng-show="ui.table.orderBy === 'count'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
+            <th class="clickable" ng-click="ui.table.sort('first.$date')">Start <span ng-show="ui.table.orderBy === 'first.$date'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
+            <th class="clickable" ng-click="ui.table.sort('last.$date')">End <span ng-show="ui.table.orderBy === 'last.$date'" class="glyphicon {{ ui.table.rev ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }}" aria-hidden="true"></span></th>
         </tr>
     </thead>
     <tbody id="measurement_campaigns">
@@ -21,9 +23,11 @@
             <td>Loading...</td>
             <td>Loading...</td>
         </tr>
-        <tr ng-repeat="item in msmntCampaigns">
+        <tr ng-repeat="item in msmntCampaigns | orderBy:ui.table.orderBy:ui.table.rev">
             <td>{{ item._id }}</td>
             <td>{{ item.count }}</td>
+            <td>{{ item.first.$date ? main.formatTime(item.first.$date) : "( empty )" }}</td>
+            <td>{{ item.last.$date ? main.formatTime(item.last.$date) : "( empty )" }}</td>
         </tr>
     </tbody>
 </table>

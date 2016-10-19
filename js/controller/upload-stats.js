@@ -22,4 +22,19 @@ angular.module("ptoApp")
 		};
 
 		$http.get(config.apibase + "/api/uploadstats").then(success, error);
+
+		$scope.ui = {
+			table: {
+				rev: false,
+				orderBy: '_id',
+				sort: function(orderBy) {
+					if (orderBy === this.orderBy) {
+						this.rev = !this.rev
+					} else {
+						this.rev = false;
+					}
+					this.orderBy = orderBy;
+				}
+			},
+		};
 	});
