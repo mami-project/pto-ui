@@ -1,6 +1,7 @@
 angular.module("ptoApp")
 
 	.controller("ObservatoryCtrl", function($scope, $q, $http, $uibModal, cfpLoadingBar, $location, mock, userStorage, config) {
+		console.log("blattsalat")
 		$scope.main.setActiveMenu("advanced");
 		$scope.directLink = $location.absUrl();
 		//cfpLoadingBar.start();

@@ -1,0 +1,71 @@
+<h3>Query Criteria</h3>
+(...)
+<h3>Projection</h3>
+<form>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Column</th>
+				<th>Select</th>
+				<th>Sort</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="column in columns">
+				<td>{{ column.label }}</td>
+				<td><input type="checkbox" name="" ng-model="column.selected"></td>
+				<td><input type="radio" name="sortBy" value="{{ column.type }}" ng-disabled="!column.selected" ng-model="sortBy.type"></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+<h3>Overview Tables</h3>
+<p>Grouped and counted.</p>
+<p><em>Includes all Results</em></p>
+<div class="row">
+	<div class="col-sm-6" ng-repeat="column in columns | filter:isSelected">
+		<div class="row">
+			<div class="col-sm-6">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>{{ column.label }}</th>
+							<th>#</th>
+							<th>%</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="group in groupedObservations[column.type]">
+							<td>{{ group.value }}</td>
+							<td>{{ group.count }}</td>
+							<td>{{ group.pct }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-sm-6">
+				<br>
+				<br>
+				<br>
+				<p>(...) Piechart</p>
+			</div>
+		</div>
+	</div>
+</div>
+<h3>Detail Table</h3>
+<p>Single observations sorted by selected criterion.</p>
+<p><em>Server sided pagination & sorting.</em></p>
+<div class="checkbox"><label><input type="checkbox" name="" ng-model="sortDesc">Sort Desc</label></div>
+<table class="table">
+	<thead>
+		<tr>
+			<th ng-repeat="column in columns | filter:isSelected">{{ column.label }}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="observation in observations | orderBy:sortBy.type:sortDesc track by $index">
+			<td ng-repeat="column in columns | filter:isSelected">{{ column.format(observation[column.type]) }}</td>
+		</tr>
+	</tbody>
+</table>
+<p>Other Visualizations (TODO) (Timeline / Line Chart / Bar Chart / Column-/Bar-Chart etc.)</p>
